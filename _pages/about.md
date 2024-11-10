@@ -28,7 +28,7 @@ I completed my Ph.D in Hardware Security from Tianjin University, under the supe
 My areas of research are Hardware Security and Confidential Computing. In particular, my expertise and interests include:
 
 - Computer-aided Design (CAD) for Hardware Security Verification
-- Hardware-enabled side-channel attacks and defenses
+- Hardware-enabled Side-channel Attacks and Defenses
 - Hardware-based Trusted Execution Environment (TEE)
 - Hardware Root of Trust (RoT), Measured boot and Attestation
 
