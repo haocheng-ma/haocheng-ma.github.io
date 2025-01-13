@@ -53,7 +53,7 @@ socials_in_search: true
 bib_search: true
 
 # Dimensions
-max_width: 800px
+max_width: 1000px
 
 # TODO: add layout settings (single page vs. multi-page)
 
@@ -133,7 +133,7 @@ bing_site_verification: # out your bing-site-verification ID (Bing Webmaster)
 # -----------------------------------------------------------------------------
 
 # blog_name: al-folio # blog_name will be displayed in your blog page
-blog_description: Waiting for update...
+# blog_description: Waiting for update...
 permalink: /blog/:year/:title/
 lsi: false # produce an index for related posts
 
