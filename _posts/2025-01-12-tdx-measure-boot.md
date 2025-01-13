@@ -162,7 +162,7 @@ The TD HOB list is used to pass the information from VMM to TDVF. The TD HOB mus
 - The TD HOB must include PHIT HOB as the first HOB. EfiMemoryTop, EfiMemoryBottom, EfiFreeMemoryTop, and EfiFreeMemoryBottom shall be zero.
 - The TD HOB must include at least one Resource Description HOB to declare the physical memory resource.
 
-0. `SecTdxHelperLib` is the SEC instance of  TdxHelperLib. It implements the following
+***0.*** `SecTdxHelperLib` is the SEC instance of  TdxHelperLib. It implements the following
 functions for tdx in SEC phase:
 - `TdxHelperMeasureTdHob` measure/extend TdHob and store the measurement
    value in workarea.
@@ -173,57 +173,57 @@ functions for tdx in SEC phase:
 
 **Measure Secure Boot Policy to PCR[7]/RTMR[0]**
  
-1. UEFI Debug Mode
+***1.*** UEFI Debug Mode
 
 If a platform provides a firmware debugger mode, then the platform shall measure "UEFI Debug Mode" string with `EV_EFI_ACTION`. This logic is done at [TdTcg2Dxe.c](https://github.com/tianocore/edk2/blob/master/OvmfPkg/Tcg/TdTcg2Dxe/TdTcg2Dxe.c) `MeasureSecureBootPolicy()`, based upon [`PcdFirmwareDebuggerInitialized`](https://github.com/tianocore/edk2/blob/master/SecurityPkg/SecurityPkg.dec).
 
-2. The contents of the `SecureBoot` variable
+***2.*** The contents of the `SecureBoot` variable
 
-3. The contents of the `PK` variable
+***3.*** The contents of the `PK` variable
 
-4. The contents of the `KEK` variable
+***4.*** The contents of the `KEK` variable
 
-5. The contents of the `EFI_IMAGE_SECURITY_DATABASE` variable (the DB)
+***5.*** The contents of the `EFI_IMAGE_SECURITY_DATABASE` variable (the DB)
 
-6. The contents of the `EFI_IMAGE_SECURITY_DATABASE1` variable (the DBX)
+***6.*** The contents of the `EFI_IMAGE_SECURITY_DATABASE1` variable (the DBX)
 
-7. The contents of the `EFI_IMAGE_SECURITY_DATABASE2` (the DBT) variable, if present and not empty
+***7.*** The contents of the `EFI_IMAGE_SECURITY_DATABASE2` (the DBT) variable, if present and not empty
 
 The UEFI secure boot related variables -- "SecureBoot", "PK", "KEK", "db", and "dbx" are unconditionally measured by [TdTcg2Dxe.c](https://github.com/tianocore/edk2/blob/master/OvmfPkg/Tcg/TdTcg2Dxe/TdTcg2Dxe.c) `ReadAndMeasureSecureVariable()`. The event type is [`EV_EFI_VARIABLE_DRIVER_CONFIG`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/IndustryStandard/UefiTcgPlatform.h). If they are not present, a zero size UEFI variable entry will be measured. The "dbt" and "dbr" variables are conditionally measured only if they are present by the routine `MeasureAllSecureVariables()`.
 
-8. Separator
+***8.*** Separator
 
 `EV_SEPARATOR` for PCR7 is handled in [TdTcg2Dxe.c](https://github.com/tianocore/edk2/blob/master/OvmfPkg/Tcg/TdTcg2Dxe/TdTcg2Dxe.c) `MeasureSecureBootPolicy()` when the UEFI variable is ready. It is just after `MeasureAllSecureVariables()`. It is earlier than the `ReadyToBoot` event signal. The reason is that the PCR7 [`EV_SEPARATOR`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/IndustryStandard/UefiTcgPlatform.h) must be between SecureBootPolicy (Configure) and and ImageVerification (Authority).
 
 **Measure Boot Variable to PCR[1]/RTMR[0]**
 
-9. The UEFI BootOrder Variable and the Boot#### variables (just device paths)
+***9.*** The UEFI BootOrder Variable and the Boot#### variables (just device paths)
 
 The UEFI boot related variables, such as "BootOrder." and "Boot####"  are measured by [TdTcg2Dxe.c](https://github.com/tianocore/edk2/blob/master/OvmfPkg/Tcg/TdTcg2Dxe/TdTcg2Dxe.c) `ReadAndMeasureBootVariable()`. The event type is [`EV_EFI_VARIABLE_BOOT`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/IndustryStandard/UefiTcgPlatform.h). These variables are measured if they are present in `MeasureAllBootVariables()`.
 
 **Upon selecting a boot device,**
 
-10. The boot attempt action "Calling EFI Application from Boot Option", this means Boot Manager attempting to execute code from a Boot Option **(PCR[4]/RTMR[1]**).
+***10.*** The boot attempt action "Calling EFI Application from Boot Option", this means Boot Manager attempting to execute code from a Boot Option **(PCR[4]/RTMR[1]**).
 
 The boot attempt action is measured by [TdTcg2Dxe.c](https://github.com/tianocore/edk2/blob/master/OvmfPkg/Tcg/TdTcg2Dxe/TdTcg2Dxe.c) `OnReadyToBoot()`. Before invoking a boot option, it measures the action \"Calling EFI Application from Boot Option\". After the boot option returns, it measures the action \"Returning from EFI Application from Boot Option\".
 
-11. Separator, Draw a line between leaving pre-boot env and entering post-boot env **(PCR[0~6]/RTMR[1])**.
+***11.*** Separator, Draw a line between leaving pre-boot env and entering post-boot env **(PCR[0~6]/RTMR[1])**.
 
-12. **[Optional] If UEFI Secure Boot is enabled,** measure the entry in the `EFI_IMAGE_SECURITY_DATABASE` that was used to validate the UEFI image **(PCR[7]/RTMR[0])**. 
+***12.*** **[Optional] If UEFI Secure Boot is enabled,** measure the entry in the `EFI_IMAGE_SECURITY_DATABASE` that was used to validate the UEFI image **(PCR[7]/RTMR[0])**. 
 
 When UEFI secure boot is enabled, the [`DxeImageVerificationLib`](https://github.com/tianocore/edk2/tree/master/SecurityPkg/Library/DxeImageVerificationLib) verifies the PE image signature based upon the [`EFI_SIGNATURE_DATA`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/Guid/ImageAuthentication.h) in the [`EFI_SIGNATURE_LIST`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/Guid/ImageAuthentication.h) of an image signature database. If an [`EFI_SIGNATURE_DATA`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/Guid/ImageAuthentication.h) is used to verify the image, then this [`EFI_SIGNATURE_DATA`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/Guid/ImageAuthentication.h) will be measured with [`EV_EFI_VARIABLE_AUTHORITY`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/IndustryStandard/UefiTcgPlatform.h) in [`DxeImageVerificationLib` Measurement.c](https://github.com/tianocore/edk2/blob/master/SecurityPkg/Library/DxeImageVerificationLib/Measurement.c) `MeasureVariable()`.
 
-13. The GUID Partition Table (GPT) disk geometry **(PCR[5]/RTMR[1])**.
+***13.*** The GUID Partition Table (GPT) disk geometry **(PCR[5]/RTMR[1])**.
 
 When a system boots a boot option in a GUID-named partition of the disk, the GUID partition table (GPT) disk geometry needs to be measured. It is done by [DxeTpm2MeasureBootLib.c](https://github.com/tianocore/edk2/blob/master/SecurityPkg/Library/DxeTpm2MeasureBootLib/DxeTpm2MeasureBootLib.c) `Tcg2MeasureGptTable()` in `DxeTpm2MeasureBootHandler()`.
 
-14. The selected UEFI application code PE/COFF image, i.e., OS loader **(PCR[4]/RTMR[1])**.
+***14.*** The selected UEFI application code PE/COFF image, i.e., OS loader **(PCR[4]/RTMR[1])**.
 
 A third party UEFI application, such as a UEFI shell utility, a standard OS loader or an OEM boot option, is measured by [DxeTpm2MeasureBootLib.c](https://github.com/tianocore/edk2/blob/master/SecurityPkg/Library/DxeTpm2MeasureBootLib/DxeTpm2MeasureBootLib.c) `Tcg2MeasurePeImage()` in `DxeTpm2MeasureBootHandler()`. The event type is [`EV_EFI_BOOT_SERVICES_APPLICATION`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/IndustryStandard/UefiTcgPlatform.h). If a UEFI application is an FV which is dispatched in the DXE phase, it is also measured to PCR4 irrespective of whether the FV is measured or unmeasured.
 
 **Then OS loader, i.e., [Grub2](https://git.savannah.gnu.org/cgit/grub.git/) extends the trusted boot chain from virtual firmware into the OS.**
 
-15. Grub2 measures configuration file (e.g., grub.cfg), grub commands, kernel binary, kernel commands and initrd binary **(PCR[8, 9]/RTMR[2])** . PCR[8] is for the command line string and PCR[9] is for a file binary, as shown in the following table.
+***15.*** Grub2 measures configuration file (e.g., grub.cfg), grub commands, kernel binary, kernel commands and initrd binary **(PCR[8, 9]/RTMR[2])** . PCR[8] is for the command line string and PCR[9] is for a file binary, as shown in the following table.
 
 To support measurements on confidential computing platforms, two patches have been upstreamed, including:
 - [efi/tpm: Add EFI_CC_MEASUREMENT_PROTOCOL support](https://git.savannah.gnu.org/cgit/grub.git/commit/?id=4c76565b6cb885b7e144dc27f3612066844e2d19)
@@ -242,19 +242,20 @@ when grub2 executes a command line such as `GRUB_VERIFY_MODULE_CMDLINE`, `GRUB_V
 
 `grub_verifiers_open()` is registered as one of grub_file_filters in [`file.h`](https://github.com/rhboot/grub2/blob/master/include/grub/file.h). Whenever grub uses [file.c](https://github.com/rhboot/grub2/blob/master/grub-core/kern/file.c) `grub_file_open()` this filter is invoked. Finally, `grub_tpm_verify_write()` measures the file binary to **PCR[9]/RTMR[2]**.
 
-16. The boot attempt action "Exit Boot Services Invocation", this means Boot Manager has sent the call to UEFI to end Boot Services **(PCR[5]/RTMR[1])**.
+***16.*** The boot attempt action "Exit Boot Services Invocation", this means Boot Manager has sent the call to UEFI to end Boot Services **(PCR[5]/RTMR[1])**.
 
-17. The boot attempt action "Exit Boot Services Returned with Success", this means UEFI successfully existed Boot Services and pre-OS environment has been terminated **(PCR[5]/RTMR[1])**.
+***17.*** The boot attempt action "Exit Boot Services Returned with Success", this means UEFI successfully existed Boot Services and pre-OS environment has been terminated **(PCR[5]/RTMR[1])**.
 
 The ExitBootServices action is measured by [TdTcg2Dxe.c](https://github.com/tianocore/edk2/blob/master/OvmfPkg/Tcg/TdTcg2Dxe/TdTcg2Dxe.c). If ExitBootServices succeeds, then `OnExitBootServices()` is invoked. If ExitBootServices fails, then `OnExitBootServicesFailed()` is invoked.
 
 **If Security Boot Policy update after initial measurement and before `ExitBootServices()` has completed,**
 
-18. The platform MAY be restarted OR the variables MUST be remeasured into **(PCR[7]/RTMR[0])**. Additionally the normal update process for setting any of the defined Secure Boot variables SHOULD occur before the initial measurement in PCR[7] or after the call to `ExitBootServices()` has completed.
+***18.*** The platform MAY be restarted OR the variables MUST be remeasured into **(PCR[7]/RTMR[0])**. Additionally the normal update process for setting any of the defined Secure Boot variables SHOULD occur before the initial measurement in PCR[7] or after the call to `ExitBootServices()` has completed.
 
 The UEFI secure boot variable update is measured in [`Variable RuntimeDxe`](https://github.com/tianocore/edk2/tree/master/MdeModulePkg/Universal/Variable/RuntimeDxe). If any of the above secure boot related variables are updated, then [Variable RuntimeDxe Measurement.c](https://github.com/tianocore/edk2/blob/master/MdeModulePkg/Universal/Variable/RuntimeDxe/Measurement.c) `MeasureVariable()` will measure the new data with [`EV_EFI_VARIABLE_DRIVER_CONFIG`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/IndustryStandard/UefiTcgPlatform.h).
 
 ## Attestation
+
 To be Updated...
 
 [go-eventlog](https://github.com/google/go-eventlog)
@@ -263,16 +264,16 @@ To be Updated...
 
 ## Annex A: Configurations for TDVF
 
-### **Config-A**:
-1. Merge the *basic* TDVF feature to existing `OvmfX64Pkg.dsc`. (Align with existing SEV)
-2. Threat model: VMM is NOT out of TCB. (We don't make things worse)
-3. The `OvmfX64Pkg.dsc` includes SEV/TDX/normal OVMF basic boot capability. The final binary can run on SEV/TDX/normal OVMF.
-4. No changes to existing OvmfPkgX64 image layout.
-5. No need to remove features if they exist today.
-6. PEI phase is NOT skipped in either Td or Non-Td.
-7. RTMR based measurement is supported.
-8. External inputs from Host VMM are measured, such as TdHob, CFV.
-9. Other external inputs are measured, such as FW_CFG data, os loader, initrd, etc.
+**Config-A**:
+- Merge the *basic* TDVF feature to existing `OvmfX64Pkg.dsc`. (Align with existing SEV)
+- Threat model: VMM is NOT out of TCB. (We don't make things worse)
+- The `OvmfX64Pkg.dsc` includes SEV/TDX/normal OVMF basic boot capability. The final binary can run on SEV/TDX/normal OVMF.
+- No changes to existing OvmfPkgX64 image layout.
+- No need to remove features if they exist today.
+- PEI phase is NOT skipped in either Td or Non-Td.
+- RTMR based measurement is supported.
+- External inputs from Host VMM are measured, such as TdHob, CFV.
+- Other external inputs are measured, such as FW_CFG data, os loader, initrd, etc.
 
 **Build the TDVF (Config-A) target:**
 
@@ -284,15 +285,15 @@ source edksetup.sh
 build.sh -p OvmfPkg/OvmfPkgX64.dsc -a X64 -t GCC5
 ```
 
-### **Config-B**:
-1. Add a standalone `IntelTdx.dsc` to a TDX specific directory for a *full*  feature TDVF.(Align with existing SEV)
-2. Threat model: VMM is out of TCB. (We need necessary change to prevent attack from VMM)
-3. `IntelTdx.dsc` includes TDX/normal OVMF basic boot capability. The final binary can run on TDX/normal OVMF.
-4. It might eventually merge with AmdSev.dsc, but NOT at this point of time. And we don't know when it will happen. We need sync with AMD in the community after both of us think the solutions are mature to merge.
-5. Need to add necessary security feature as mandatory requirement, such as RTMR based Trusted Boot support.
-6. Need to measure the external input from Host VMM, such as TdHob, CFV.
-7. Need to measure other external input, such as FW_CFG data, os loader, initrd, etc.
-8. Need to remove unnecessary attack surfaces, such as network stack.
+ **Config-B**:
+- Add a standalone `IntelTdx.dsc` to a TDX specific directory for a *full*  feature TDVF.(Align with existing SEV)
+- Threat model: VMM is out of TCB. (We need necessary change to prevent attack from VMM)
+- `IntelTdx.dsc` includes TDX/normal OVMF basic boot capability. The final binary can run on TDX/normal OVMF.
+- It might eventually merge with AmdSev.dsc, but NOT at this point of time. And we don't know when it will happen. We need sync with AMD in the community after both of us think the solutions are mature to merge.
+- Need to add necessary security feature as mandatory requirement, such as RTMR based Trusted Boot support.
+- Need to measure the external input from Host VMM, such as TdHob, CFV.
+- Need to measure other external input, such as FW_CFG data, os loader, initrd, etc.
+- Need to remove unnecessary attack surfaces, such as network stack.
 
 **Build the TDVF (Config-B) target:**
 
@@ -309,26 +310,26 @@ build.sh -p OvmfPkg/IntelTdx/IntelTdxX64.dsc -a X64 -t GCC5
 
 UEFI has six main boot phases, which are all critical in the initialization process of the platform. The combined phases are referred to as the Platform Initialization or PI.
 
-1. Security (SEC)
+***1.*** Security (SEC)
 
 This phase is the primary stage of the UEFI boot process, and will generally be used to: initialize a temporary memory store, act as the root of trust in the system and provide information to the Pre-EFI core phase. This root of trust is a mechanism that ensures any code that is executed in the PI is cryptographically validated (digitally signed), creating a “secure boot” environment.
 
-2. Pre-EFI Initialization (PEI)
+***2.*** Pre-EFI Initialization (PEI)
 
 This is the second stage of the boot process and involves using only the CPU’s current resources to dispatch Pre-EFI Initialization Modules (PEIMs). These are used to perform initialization of specific boot-critical operations such as memory initialization, whilst also allowing control to pass to the Driver Execution Environment (DXE).
 
-3. Driver Execution Environment (DXE)
+***3.*** Driver Execution Environment (DXE)
 
 The DXE phase is where the majority of the system initialization occurs. In the PEI stage, the memory required for the DXE to operate is allocated and initialized, and upon control being passed to the DXE, the DXE Dispatcher is then invoked. The dispatcher will perform the loading and execution of hardware drivers, runtime services, and any boot services required for the operating system to start.
 
-4. Boot Device Selection (BDS)
+***4.*** Boot Device Selection (BDS)
 
 Upon completion of the DXE Dispatcher executing all DXE drivers, control is passed to the BDS. This stage is responsible for initializing console devices and any remaining devices that are required. The selected boot entry (OS loader) is then loaded and executed in preparation for the Transient System Load (TSL).
 
-5. Transient System Load (TSL)
+***5.*** Transient System Load (TSL)
 
 In this phase, the PI process is now directly between the boot selection and the expected hand-off to the main operating system phase. Here, an application such as the UEFI shell may be invoked, or (more commonly) a boot loader will run in order to prepare the final OS environment. The boot loader is usually responsible for terminating the UEFI Boot Services via the ExitBootServices() call. However, it is also possible for the OS itself to do this, such as the Linux kernel with CONFIG_EFI_STUB.
 
-6. Runtime (RT)
+***6.*** Runtime (RT)
 
 The final phase is the runtime one. Here is where the final handoff to the OS occurs. The UEFI compatible OS now takes over the system. The UEFI runtime services remain available for the OS to use, such as for querying and writing variables from NVRAM.
