@@ -17,7 +17,28 @@ li,
 span,
 strong {
   color: var(--global-text-color);
-  font-family: Roboto, STZhongsong, "华文中宋", Georgia, Tahoma, sans-serif;;
+  font-family: Lato, Nunito, 'Open Sans', Roboto, STZhongsong, "华文中宋", Georgia, Tahoma, sans-serif;
+  font-weight: normal;
+}
+
+p {
+  font-weight: normal;
+  line-height: 1.8;
+}
+
+em {
+  font-weight: normal;
+  line-height: 1.8;
+}
+
+li {
+  font-weight: normal;
+  line-height: 1.8;
+}
+
+strong {
+  font-weight: bold;
+  line-height: 1.8;
 }
 
 hr {
@@ -840,7 +861,7 @@ figure.highlight {
 }
 
 pre {
-  color: var(--global-theme-color);
+  color: var(--global-code-color);
   background-color: var(--global-code-bg-color);
   border-radius: 6px;
   padding: 6px 12px;
@@ -855,7 +876,7 @@ pre {
 }
 
 code {
-  color: var(--global-theme-color);
+  color: var(--global-code-color);
   background-color: var(--global-code-bg-color);
   border-radius: 3px;
   padding: 3px 3px;

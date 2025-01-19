@@ -148,7 +148,7 @@ The typical usage of MRTD and RTMR is shown below, more detailes could be found 
 - RTMR[2] is for the OS component, such as OS kernel, initrd, and application (match PCR[8~15]). The usage is OS dependent.
 - RTMR[3] is reserved for special usage only.
 
-## **Measured Boot Flow**
+## Measured Boot Flow
 
 In general, the transitions (dotted line in Booting Sequence figure) where events are measured. Hence a trusted chain, i.e., virtual firmware -> bootloaders -> OS -> applications will be built.
 
@@ -203,38 +203,38 @@ The UEFI boot related variables, such as "BootOrder." and "Boot####"  are measur
 
 **Upon selecting a boot device,**
 
-***10.*** The boot attempt action "Calling EFI Application from Boot Option", this means Boot Manager attempting to execute code from a Boot Option **(PCR[4]/RTMR[1]**).
+***10.*** The boot attempt action "Calling EFI Application from Boot Option", this means Boot Manager attempting to execute code from a Boot Option (**PCR[4]/RTMR[1]**).
 
 The boot attempt action is measured by [TdTcg2Dxe.c](https://github.com/tianocore/edk2/blob/master/OvmfPkg/Tcg/TdTcg2Dxe/TdTcg2Dxe.c) `OnReadyToBoot()`. Before invoking a boot option, it measures the action \"Calling EFI Application from Boot Option\". After the boot option returns, it measures the action \"Returning from EFI Application from Boot Option\".
 
-***11.*** Separator, Draw a line between leaving pre-boot env and entering post-boot env **(PCR[0~6]/RTMR[1])**.
+***11.*** Separator, Draw a line between leaving pre-boot env and entering post-boot env (**PCR[0~6]/RTMR[1]**).
 
-***12.*** **[Optional] If UEFI Secure Boot is enabled,** measure the entry in the `EFI_IMAGE_SECURITY_DATABASE` that was used to validate the UEFI image **(PCR[7]/RTMR[0])**. 
+***12.*** **[Optional] If UEFI Secure Boot is enabled,** measure the entry in the `EFI_IMAGE_SECURITY_DATABASE` that was used to validate the UEFI image (**PCR[7]/RTMR[0]**). 
 
 When UEFI secure boot is enabled, the [`DxeImageVerificationLib`](https://github.com/tianocore/edk2/tree/master/SecurityPkg/Library/DxeImageVerificationLib) verifies the PE image signature based upon the [`EFI_SIGNATURE_DATA`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/Guid/ImageAuthentication.h) in the [`EFI_SIGNATURE_LIST`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/Guid/ImageAuthentication.h) of an image signature database. If an [`EFI_SIGNATURE_DATA`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/Guid/ImageAuthentication.h) is used to verify the image, then this [`EFI_SIGNATURE_DATA`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/Guid/ImageAuthentication.h) will be measured with [`EV_EFI_VARIABLE_AUTHORITY`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/IndustryStandard/UefiTcgPlatform.h) in [`DxeImageVerificationLib` Measurement.c](https://github.com/tianocore/edk2/blob/master/SecurityPkg/Library/DxeImageVerificationLib/Measurement.c) `MeasureVariable()`.
 
-***13.*** The GUID Partition Table (GPT) disk geometry **(PCR[5]/RTMR[1])**.
+***13.*** The GUID Partition Table (GPT) disk geometry (**PCR[5]/RTMR[1]**).
 
 When a system boots a boot option in a GUID-named partition of the disk, the GUID partition table (GPT) disk geometry needs to be measured. It is done by [DxeTpm2MeasureBootLib.c](https://github.com/tianocore/edk2/blob/master/SecurityPkg/Library/DxeTpm2MeasureBootLib/DxeTpm2MeasureBootLib.c) `Tcg2MeasureGptTable()` in `DxeTpm2MeasureBootHandler()`.
 
-***14.*** The selected UEFI application code PE/COFF image, i.e., OS loader **(PCR[4]/RTMR[1])**.
+***14.*** The selected UEFI application code PE/COFF image, i.e., OS loader (**PCR[4]/RTMR[1]**).
 
 A third party UEFI application, such as a UEFI shell utility, a standard OS loader or an OEM boot option, is measured by [DxeTpm2MeasureBootLib.c](https://github.com/tianocore/edk2/blob/master/SecurityPkg/Library/DxeTpm2MeasureBootLib/DxeTpm2MeasureBootLib.c) `Tcg2MeasurePeImage()` in `DxeTpm2MeasureBootHandler()`. The event type is [`EV_EFI_BOOT_SERVICES_APPLICATION`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/IndustryStandard/UefiTcgPlatform.h). If a UEFI application is an FV which is dispatched in the DXE phase, it is also measured to PCR4 irrespective of whether the FV is measured or unmeasured.
 
 **Then OS loader, i.e., [Grub2](https://git.savannah.gnu.org/cgit/grub.git/) extends the trusted boot chain from virtual firmware into the OS.**
 
-***15.*** Grub2 measures configuration file (e.g., grub.cfg), grub commands, kernel binary, kernel commands and initrd binary **(PCR[8, 9]/RTMR[2])** . PCR[8] is for the command line string and PCR[9] is for a file binary, as shown in the following table.
+***15.*** Grub2 measures configuration file (e.g., grub.cfg), grub commands, kernel binary, kernel commands and initrd binary (**PCR[8, 9]/RTMR[2]**). PCR[8] is for the command line string and PCR[9] is for a file binary, as shown in the following table.
 
 To support measurements on confidential computing platforms, two patches have been upstreamed, including:
 - [efi/tpm: Add EFI_CC_MEASUREMENT_PROTOCOL support](https://git.savannah.gnu.org/cgit/grub.git/commit/?id=4c76565b6cb885b7e144dc27f3612066844e2d19)
 - [commands/efi/tpm: Re-enable measurements on confidential computing platforms](https://git.savannah.gnu.org/cgit/grub.git/commit/?id=86df79275d065d87f4de5c97e456973e8b4a649c)
 
-| **PCR Index** | **PCR Usage**                                                                                                                                            |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 8             | Grub command line: All executed commands (including those from configuration files) will be logged and measured as entered with a prefix of "grub cmd: " |
-|               | Kernel command line: Any command line passed to a kernel will be logged and measured as entered with a prefix of "kernel cmdline: "                      |
-|               | Module command line: Any command line passed to a kernel module will be logged and measured as entered with a prefix of "module cmdline: "               |
-| 9             | Files: Any file read by GRUB will be logged and measured with a descriptive text corresponding to the filename.                                          |
+| PCR Index | PCR Usage                                                                                                                                                |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 8         | Grub command line: All executed commands (including those from configuration files) will be logged and measured as entered with a prefix of "grub cmd: " |
+|           | Kernel command line: Any command line passed to a kernel will be logged and measured as entered with a prefix of "kernel cmdline: "                      |
+|           | Module command line: Any command line passed to a kernel module will be logged and measured as entered with a prefix of "module cmdline: "               |
+| 9         | Files: Any file read by GRUB will be logged and measured with a descriptive text corresponding to the filename.                                          |
 
 [tpm.c](https://github.com/rhboot/grub2/blob/master/grub-core/commands/tpm.c) registers `grub_tpm_verify_string()` and `grub_tpm_verify_write()` to a grub_file_verifier structure. They will be called by `grub_verify_string()` and `grub_verifiers_open()` in [verifiers.c](https://github.com/rhboot/grub2/blob/master/grub-core/commands/verifiers.c).
 
@@ -242,15 +242,15 @@ when grub2 executes a command line such as `GRUB_VERIFY_MODULE_CMDLINE`, `GRUB_V
 
 `grub_verifiers_open()` is registered as one of grub_file_filters in [`file.h`](https://github.com/rhboot/grub2/blob/master/include/grub/file.h). Whenever grub uses [file.c](https://github.com/rhboot/grub2/blob/master/grub-core/kern/file.c) `grub_file_open()` this filter is invoked. Finally, `grub_tpm_verify_write()` measures the file binary to **PCR[9]/RTMR[2]**.
 
-***16.*** The boot attempt action "Exit Boot Services Invocation", this means Boot Manager has sent the call to UEFI to end Boot Services **(PCR[5]/RTMR[1])**.
+***16.*** The boot attempt action "Exit Boot Services Invocation", this means Boot Manager has sent the call to UEFI to end Boot Services (**PCR[5]/RTMR[1]**).
 
-***17.*** The boot attempt action "Exit Boot Services Returned with Success", this means UEFI successfully existed Boot Services and pre-OS environment has been terminated **(PCR[5]/RTMR[1])**.
+***17.*** The boot attempt action "Exit Boot Services Returned with Success", this means UEFI successfully existed Boot Services and pre-OS environment has been terminated (**PCR[5]/RTMR[1]**).
 
 The ExitBootServices action is measured by [TdTcg2Dxe.c](https://github.com/tianocore/edk2/blob/master/OvmfPkg/Tcg/TdTcg2Dxe/TdTcg2Dxe.c). If ExitBootServices succeeds, then `OnExitBootServices()` is invoked. If ExitBootServices fails, then `OnExitBootServicesFailed()` is invoked.
 
 **If Security Boot Policy update after initial measurement and before `ExitBootServices()` has completed,**
 
-***18.*** The platform MAY be restarted OR the variables MUST be remeasured into **(PCR[7]/RTMR[0])**. Additionally the normal update process for setting any of the defined Secure Boot variables SHOULD occur before the initial measurement in PCR[7] or after the call to `ExitBootServices()` has completed.
+***18.*** The platform MAY be restarted OR the variables MUST be remeasured into (**PCR[7]/RTMR[0]**). Additionally the normal update process for setting any of the defined Secure Boot variables SHOULD occur before the initial measurement in PCR[7] or after the call to `ExitBootServices()` has completed.
 
 The UEFI secure boot variable update is measured in [`Variable RuntimeDxe`](https://github.com/tianocore/edk2/tree/master/MdeModulePkg/Universal/Variable/RuntimeDxe). If any of the above secure boot related variables are updated, then [Variable RuntimeDxe Measurement.c](https://github.com/tianocore/edk2/blob/master/MdeModulePkg/Universal/Variable/RuntimeDxe/Measurement.c) `MeasureVariable()` will measure the new data with [`EV_EFI_VARIABLE_DRIVER_CONFIG`](https://github.com/tianocore/edk2/blob/master/MdePkg/Include/IndustryStandard/UefiTcgPlatform.h).
 
