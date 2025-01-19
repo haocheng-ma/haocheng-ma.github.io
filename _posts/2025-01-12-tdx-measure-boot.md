@@ -139,7 +139,7 @@ There certainly are fewer TD measurement registers than TPM Platform Configurati
 | 7             | Secure Boot Configuration                             | RTMR[0]                        |
 | 8~15          | TD OS measurement                                     | RTMR[2]                        |
 
-*RTMR[3] is reserved for special usage, such as virtual TPM. Users have the flexibility to utilize RTMR[3] if it is not required for these specialized purposes.*
+*NOTE: RTMR[3] is reserved for special usage, such as virtual TPM. Users have the flexibility to utilize RTMR[3] if it is not required for these specialized purposes.*
 
 The typical usage of MRTD and RTMR is shown below, more detailes could be found in [8.1 Measurement Register Usage in TD](https://cdrdv2.intel.com/v1/dl/getContent/733585).
 - MRTD is for the TDVF code (match PCR[0]).
