@@ -249,8 +249,6 @@ The UEFI secure boot variable update is measured in Variable [`RuntimeDxe`](htt
 
 ## Attestation
 
-To be Updated...
-
 We will analyse how to verify the TD Quote from the perspective of the verifier, without focusing on the Quote generation or interactions with the attester. At a high level, it can be broken down into Quote Verification, Event Log Replay and Event Parsing.
 
 ### Quote Verification
