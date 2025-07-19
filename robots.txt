@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: haocheng-ma.github.io/sitemap.xml
+Sitemap: https://mahaocheng.me/sitemap.xml
