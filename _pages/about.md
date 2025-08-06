@@ -19,17 +19,15 @@ selected_papers: false # includes a list of papers marked as "selected={true}"
 social: true  # includes social icons at the bottom of the page
 ---
 
-Hey, thanks for stopping by! 👋
+Hi there ✨ Thanks for visiting my page!
 
-Since March 2023, I am a Security Researcher at Huawei. 
+I’ve been a Security Researcher at Huawei since March 2023.
 
-I completed my Ph.D in Hardware Security from Tianjin University, under the supervision of Prof. Yiqiang Zhao and Prof. Yier Jin. Before that, I received my B.S. in Microelectronics from Tianjin University.
+I earned my Ph.D in Hardware Security from Tianjin University, under the supervision of Prof. Yiqiang Zhao and Prof. Yier Jin. Prior to that, I received my B.S. in Microelectronics, also from Tianjin University.
 
-My areas of research are Hardware Security and Confidential Computing. In particular, my expertise and interests include:
+My research focuses on Hardware Security and Confidential Computing, with particular interests and expertise in:
 
 - Computer-aided Design (CAD) for Hardware Security Verification
 - Hardware-enabled Side-channel Attacks and Defenses
 - Hardware-based Trusted Execution Environment (TEE)
 - Hardware Root of Trust (RoT), Measured boot and Attestation
-
-Feel free to drop me an email if you are looking for research collaboration or interns on Confidential Computing.
