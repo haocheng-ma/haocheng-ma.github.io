@@ -1,7 +1,7 @@
 ---
 layout: post
 title: The VAST Data Platform
-date: 2025-07-24
+date: 2025-08-14
 description: The translated version of white paper — the VAST data platform.
 tags: VAST SSD Cluster
 categories: Storage
@@ -37,7 +37,7 @@ DataStore 的核心使命是采集并服务于来自自然世界的大量原始�
 
 DataBase 的最终使命，是组织 DataStore 中的数据知识语料，并对非结构化数据进行语义层面的编目与理解。
 
-**VAST DataEngine**（预计 2024 年推出）是该平台的声明式函数执行环境，支持类似 AWS Lambda 的无服务器函数部署与事件通知功能，运行于标准 Linux 容器中。它内建调度器与成本优化器，可在 CPU、GPU 和 DPU 架构上运行，充分利用可扩展的通用计算资源，使数据具备“计算生命”。与传统计算方法不同，DataEngine 架起了事件驱动架构与数据驱动架构之间的桥梁，能够让系统实时接入、分析、推理并训练来自各类数据的洞察结果。
+**VAST DataEngine** 是该平台的声明式函数执行环境，支持类似 AWS Lambda 的无服务器函数部署与事件通知功能，运行于标准 Linux 容器中。它内建调度器与成本优化器，可在 CPU、GPU 和 DPU 架构上运行，充分利用可扩展的通用计算资源，使数据具备“计算生命”。与传统计算方法不同，DataEngine 架起了事件驱动架构与数据驱动架构之间的桥梁，能够让系统实时接入、分析、推理并训练来自各类数据的洞察结果。
 
 DataEngine 的最终使命，是通过推理与分析，理解数据背后的特征，将原始的非结构化数据转化为有意义的信息。
 
@@ -49,14 +49,14 @@ DataSpace 的最终使命，是作为平台连接自然世界的接口，实现�
 
 现在你已经对 VAST Data Platform 有了基本了解，我们可以回顾大数据与深度学习工作负载的典型需求，看看 VAST 平台在各项关键指标上的契合程度：
 
-| **Category**            | **Big Data**                 | **Deep Learning**          | **VAST Data Platform**                                                     |
+| Category            | Big Data                 | Deep Learning          | VAST Data Platform                                                     |
 | ----------------------- | ---------------------------- | -------------------------- | -------------------------------------------------------------------------- |
-| **Data Types**          | Structured & Semi-Structured, Tables, JSON, Parquet | Unstructured Text, Video, Instruments, etc.      | Structured and Unstructured |
-| **Processor Type**      | CPUs                         | GPUs, AI Processors & DPUs | Orchestrates across and manages CPU, GPU, DPU, etc.                        |
-| **Storage Protocols**   | S3                           | S3, RDMA file for GPUs     | S3, NFSoRDMA, SMB                                                          |
-| **Dataset Size**        | TB-scale warehouses          | TB–EB scale volumes        | 100 TB – EBs                                                               |
-| **Namespace**           | Single-Site                  | Globally-Federated         | Globally-Federated                                                         |
-| **Processing Paradigm** | Data-Driven (Batch)          | Continuous (Real-Time)     | Real-time and batch                                                        |
+| Data Types          | Structured & Semi-Structured, Tables, JSON, Parquet | Unstructured Text, Video, Instruments, etc.      | Structured and Unstructured |
+| Processor Type      | CPUs                         | GPUs, AI Processors & DPUs | Orchestrates across and manages CPU, GPU, DPU, etc.                        |
+| Storage Protocols   | S3                           | S3, RDMA file for GPUs     | S3, NFSoRDMA, SMB                                                          |
+| Dataset Size        | TB-scale warehouses          | TB–EB scale volumes        | 100 TB – EBs                                                               |
+| Namespace           | Single-Site                  | Globally-Federated         | Globally-Federated                                                         |
+| Processing Paradigm | Data-Driven (Batch)          | Continuous (Real-Time)     | Real-time and batch                                                        |
 
 
 ## Architecting the VAST Data Platform
@@ -75,7 +75,7 @@ VAST Data Platform 的架构由一组服务进程组成，这些进程既相互�
 
 - **逻辑层 / VAST Element Store（Logical Layer aka VAST Element Store）**  基于元数据将底层数据块组织成用户可见的高层数据对象（Data Elements），例如文件、对象（object）、表格（table）和卷（volume）等。VAST Element Store 不仅将这些元素统一编入一个全球命名空间（适用于单个 VAST 集群），还可以借助 VAST DataSpace 跨集群构建一个全球一致的分布式命名空间。
 
-通俗讲，VAST Element Store 就像是“被伽马射线照射后的文件系统”，它以极强的灵活性将底层数据块整合成跨地域可访问的全局数据元素（如文件、对象、表格、块卷等）。  在这个层面上，系统还提供了路径或元素级的服务功能，如访问控制、数据加密、快照、克隆、数据副本等。
+    通俗讲，VAST Element Store 就像是“被伽马射线照射后的文件系统”，它以极强的灵活性将底层数据块整合成跨地域可访问的全局数据元素（如文件、对象、表格、块卷等）。  在这个层面上，系统还提供了路径或元素级的服务功能，如访问控制、数据加密、快照、克隆、数据副本等。
 
 - **协议层（Protocol Layer）**  负责为这些数据元素提供多协议的访问方式。所有协议模块是对等的、独立的，它们可以根据数据类型为外部应用程序提供完整的多协议访问能力。这意味着不论用户使用哪种接口（如 NFS、S3、SMB），都能访问相同的数据元素，并保持数据一致性。
 
@@ -202,7 +202,7 @@ VAST 则提供了更优雅的方式。  当用户发现：AI 引擎能从原本�
 对于采用“共享无物”（shared-nothing）架构的用户来说，一旦厂商发布新一代节点产品，他们往往会面临棘手的升级困境。因为在这种架构中，一个存储池内的所有节点必须完全一致，举例来说，如果某客户当前有一个由 16 个已服役 3 年的节点组成的集群，想要扩展 50% 的容量，他面临两种选择：
 
 - 购买 8 个相同型号的旧节点，并为现有 16 个节点延长技术支持
-    - 问题在于，这类延长支持通常总共最多提供 5~~6 年服务周期，这意味着在未来 2~~3 年内，客户需要整体更换所有 24 个节点
+    - 问题在于，这类延长支持通常总共最多提供 5~6 年服务周期，这意味着在未来 2~3 年内，客户需要整体更换所有 24 个节点
 - 购买 5 个新型号节点（每个容量是旧型号的两倍）并新建一个存储池
     - 问题在于系统性能将取决于数据所在的具体存储池
     - 多池管理会增加系统复杂性
