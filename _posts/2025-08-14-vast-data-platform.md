@@ -279,9 +279,9 @@ DASE 集群包含四个主要的逻辑网络，分别承担不同的通信任务
 
 #### Connect via Switch
 
-{% include figure.liquid path="assets/img/2025-08-14-vast-data-platform/10.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+“通过交换机连接（Connect via Switch）”模式，是在每个 DASE 集群自带的 NVMe Fabric 交换机上，将**NVMe 后端网络**与**前端主机网络**分别运行在两个不同的 VLAN 上。这两种网络共享同一套交换基础设施。客户的数据中心主机网络通过交换机与 DASE 集群进行连接，方式是将 Fabric 交换机通过 MLAG（多链路聚合）连接至客户核心交换机，如图中绿色线路所示。
 
-“通过交换机连接（Connect via Switch）”模式，是在每个 DASE 集群自带的 NVMe Fabric 交换机上，将**NVMe 后端网络**与**前端主机网络**分别运行在两个不同的 VLAN 上。这两种网络共享同一套交换基础设施。客户的数据中心主机网络通过交换机与 DASE 集群进行连接，方式是将 Fabric 交换机通过 MLAG（多链路聚合）连接至客户核心交换机，如上图中绿色线路所示。
+{% include figure.liquid path="assets/img/2025-08-14-vast-data-platform/10.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 在此模式下，每个 CNode 配备一张 100 Gbps 的网络接口卡（NIC）。通过一根分线电缆将这张卡拆分为两个 50 Gbps 的连接口，分别连接到两个 Fabric 交换机中。每条 50 Gbps 连接同时承载两个 VLAN：一个用于 NVMe 后端网络，另一个用于主机数据流量。
 
