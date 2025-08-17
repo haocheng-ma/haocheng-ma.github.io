@@ -13,6 +13,8 @@ toc:
 
 Note: 本文是借助 AI 翻译的 VAST 白皮书，原文请见：[The VAST Data Platform](https://www.vastdata.com/whitepaper/#TheVASTDataPlatform).
 
+---
+
 ## How It Works
 
 VAST Data Platform 是一个统一的、容器化的软件环境，能够为不同的应用场景和使用者提供多样化的数据处理功能。
