@@ -80,7 +80,7 @@ VAST DataStore 的所有元数据——从基础的文件名，到多协议访�
 
 VAST DataStore 的核心在于：它在一组共享的**存储级内存（SCM）池**中管理元数据，每个数据元素（包括文件、对象、文件夹、表格、卷等）都拥有一个自己的 **V-Tree** 结构来记录其元数据。系统通过将每个元素的唯一标识符（handle）进行一致性哈希，从而定位其对应 V-Tree 的根节点。哈希空间被划分为多个范围（range），每个范围由集群中两台机箱（enclosure）共同负责。这两台称为 DBox 的设备会保存其负责范围内所有元素的元数据根节点。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/1.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/1.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 在系统启动时，所有 VAST 服务器都会将一个大小为 1GB 的一致性哈希表加载进内存。当服务器需要访问某个文件或对象中的数据时，它会对该元素的 handle 进行哈希计算，并在内存中高速查找其属于哪个哈希范围，从而迅速定位出负责该元素元数据的 DBox，然后从中读取该元素的 V-Tree。
 
@@ -181,7 +181,7 @@ VAST DataStore 在继承过去五十年存储技术精华的基础上，引入�
 
 当某个 CNode 接收到读请求时，它会先通过集群中的一致性哈希表，定位到对应数据元素的元数据 V-Tree 根节点。随后，CNode 会沿着存储在 SCM 中的 V-Tree 指针向下查找，直到找到指向目标内容的数据块指针。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/2.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/2.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 接着，该 CNode 会直接从超大规模闪存（hyperscale SSD）中读取这些内容块，将所需的数据组装完整后返回给客户端。
 
@@ -191,7 +191,7 @@ VAST DataStore 在继承过去五十年存储技术精华的基础上，引入�
 
 数据通常以与写入 I/O 大小相同的块（chunk）写入缓冲区，对于较大的写入操作，系统会将其拆分为多个数据块分别处理。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/3.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/3.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 当数据成功写入两块 SSD 后，CNode 随即更新对应的元数据信息，并将这些元数据同样写入两块 SCM SSD 进行镜像存储。随后，CNode 向客户端发送写入成功的确认。
 
@@ -203,7 +203,7 @@ VAST DataStore 在继承过去五十年存储技术精华的基础上，引入�
 
 每个参与迁移的 CNode 会从写缓冲区中读取数据，并对其进行压缩处理，将数据切分为**平均大小在 16 到 64KB 之间的变长数据块**。随后，这些经过压缩的数据块会被写入超大规模 SSD，并以超宽条带的本地可解码纠删码（Locally Decodable Erasure Code）方式存储，从而确保数据冗余与容错能力。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/4.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/4.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 这种**异步迁移机制**不仅能实现“在线数据压缩”，而且能腾出时间进行更高效的数据去重与优化。由于迁移过程发生在客户端写入已经确认之后，**压缩与迁移时间不会影响写入延迟**。只要各个 CNode 处理写缓冲区的速度超过新数据的写入速度，那么单个数据块的处理耗时就不会影响整体性能。
 
@@ -217,7 +217,7 @@ VAST DataStore 在继承过去五十年存储技术精华的基础上，引入�
 
 VAST DataStore 采用一种 **“空闲空间写入”（write-in-free-space）** 的数据布局策略，所有写入都通过“间接寻址”实现：新数据会从 SCM 写缓冲区迁移至超大规模闪存中，以完整的纠删码条带形式写入空闲空间。当某块数据被“逻辑覆盖”时，系统不会直接覆写原有数据块，而是仅仅**更新对应元素（如文件、对象、表）的元数据指针**，将其指向新的数据位置。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/5.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/5.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 这种写入方式具有多项优势：
 
@@ -244,7 +244,7 @@ SSD 厂商在标注产品耐久性时，通常采用 **DWPD（每天整盘写入
 
 如下图所示，Intel P4326 这款 QLC SSD 的耐久性在不同写入方式下表现差异巨大：
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/6.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/6.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 当以**大块、顺序条带**方式写入时，其耐久性可以达到以**4KB 随机写入方式**写入时的 **20 倍**，而后者正是许多传统企业存储系统中常见的写入模式。
 
@@ -398,7 +398,7 @@ VAST 的目标很明确：将去重技术带来的全局数据优化优势，与
 
 更关键的是，每当有新的 DBox 加入集群，它就会带来额外的 SCM 存储资源，因此这个单一的去重域可以线性扩展到 EB（百亿 GB）级别，为大规模数据集提供一致且高效的数据缩减能力。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/7.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/7.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 ### Similarity Reduction in Practice
 
@@ -438,7 +438,7 @@ VAST 集群架构的一个核心设计理念是：将传统方法下高达 200% 
 - 在 VAST 的一组 JBOFs（Just a Bunch of Flash）中，系统可以构建一个 146+4 的 SSD 写入条带，在单个机箱内跨盘写入，实现冗余保护；
 - 如果一个 shared-nothing 集群想要达到同样的条带宽度，它需要近 40 台存储服务器才能做到，代价极高。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/8.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/8.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 ### Quad Parity for Higher Resilience
 
@@ -575,7 +575,7 @@ VAST DataStore 使用 B-Tree 结构来构建 File/Object 类型的元素，它�
 
 VAST DataBase 在处理查询时，可以仅通过读取元数据存储来完成整个 footer 扫描阶段，而无需访问任何实际的数据块。由于其数据块体积远小于标准的 Parquet 行组，因此当系统识别出哪些行组包含感兴趣的数据时，所需读取的数据量也大幅减少。此外，VAST 的 footer 是逻辑结构的，这意味着它是可扩展的——用户可以根据自身查询需求，向 footer 中添加额外的统计信息，从而进一步加速常用查询操作。这样的设计不仅提高了性能，还为个性化优化提供了灵活性。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/9.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/9.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 VAST 数据平台将“表”视为一种特殊的 Element 类型，这只是其深度集成能力的一个体现。在传统数据管理平台中，通常是将多个独立组件拼接起来使用——例如数据库引擎负责在文件中构建结构，但这些结构信息并不会传递到文件系统层，因此底层对结构数据一无所知。而 VAST 数据平台则完全不同，它使用统一的元数据系统，来贯通地管理结构化数据：从表中的某个具体字段，到包含这个字段的表元素（Element），再到实际存储该字段数据的数据块，最终精确定位至 SSD 上的某个物理地址。这种一体化的数据结构感知能力，是传统平台无法实现的。
 
@@ -647,7 +647,7 @@ VAST 用户通过“保护策略（Protection Policies）”来管理快照的�
 
 由于这些快照都是按照统一的时间计划执行的，因此它们彼此是一致的（例如：月度快照其实就是某次 15 分钟快照中的一个，因此彼此时间对齐、数据一致）。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/10.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/10.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 同一个保护策略可以用于保护多个路径或对象桶（bucket），这使得管理员可以灵活地设定分级保护等级。如上文所述，同时执行的多个路径的快照天生就是一致的，无需额外定义什么一致性组（consistency group），简化了操作，提升了可靠性。
 
@@ -678,7 +678,7 @@ VAST 所有的协议模块都是由内部团队开发，彼此是“平等”的
 
 同时，也正因如此，VAST 系统在所有受支持的协议上都能提供类似的高性能体验。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/11.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/11.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 VAST Element Store 中的每一个元素本身都是与协议无关的。这意味着 VAST 集群的所有元素及其全部存储容量，都可以通过任意受支持的协议进行访问。这种设计允许用户在多个协议之间灵活访问相同的数据元素。
 
@@ -756,7 +756,7 @@ VAST 系统支持三种技术来提升 NFS 客户端主机的访问性能：
 
 nconnect 是提升 NFS 性能的第一步，它是 Linux 5.3 内核（于 2019 年发布）中引入的 NFS 挂载选项。当 NFS 客户端使用 `nconnect=n` 选项挂载某个共享目录（export）时，系统会在 `n` 条独立的 TCP 会话之间对访问请求进行负载均衡，而不仅仅依赖单一连接。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/12.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/12.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 传统的 NFS over TCP 通常在单连接场景下的性能上限约为 2 GB/s。而启用 `nconnect=5` 或 `nconnect=8` 的配置，在 100 Gbps 以太网环境中可以实现高达 10 GB/s 的带宽表现，大幅提升数据吞吐能力。
 
@@ -776,7 +776,7 @@ nconnect=8, ClientIP=10.253.3.17-10.253.3.18, ServerIP=10.253.4.122-10.253.4.125
 
 这意味着客户端有两个可用 IP，服务器有四个可用 IP。该 NFS 客户端会建立 8 个 TCP 会话，将两个客户端 IP 与四个服务器 IP 之间的连接进行组合，最终达到流量分担的目的。下图展示了这些连接的分布方式。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/13.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/13.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 VAST 针对 NFS v3 和 NFS v4 所做的补丁（我们已提交给上游社区，供各大 Linux 发行版采纳）不仅能让视频编辑工作站将流量分布到多个 10Gbps 网络链路上，还能利用每个虚拟 IP 同时向多个服务器地址发送数据，从而将流量分散到多个 CNode 上。
 
@@ -792,7 +792,7 @@ RDMA Verbs 最初是为 InfiniBand 网络开发的，因此 NFSoRDMA 自然可�
 
 其中 RoCE v2 协议运行在 UDP 之上，不再像早期版本那样对网络配置要求苛刻。除了启用 ECN（显式拥塞通知）之外，RoCE v2 不需要特殊的网络调整。而 ECN 本身自从 10 Gbps 以太网成为主流以来，就已成为企业级交换机中的标准功能。因此，RoCE v2 让在以太网上部署高性能 NFSoRDMA 成为一件简单且可行的事情。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/14.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/14.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 最终的结果是：相比于传统的 NFS over TCP 在连接 VAST 集群时带宽最多只能达到 2 GB/s，一条 NFSoRDMA 会话却可以实现高达 100 Gbps 网络线路速度的约 70%，即 8.8 GB/s 的传输性能。
 
@@ -804,7 +804,7 @@ RDMA Verbs 最初是为 InfiniBand 网络开发的，因此 NFSoRDMA 自然可�
 
 如今，从 nconnect 到 RDMA 的一系列性能增强功能，使得 NFS 成为应对最苛刻工作负载的首选协议。下图展示了每种增强功能如何动用更多主机资源以实现更高性能，其中每次数据传输中参与的活跃组件以蓝色标示。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/15.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/15.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 **NFS Extensions**
 
@@ -842,7 +842,7 @@ VAST 系统支持 SMB 2.1 和 3.1 协议，并包括对 SMB 多通道（SMB Mult
 
 每当 SMB 客户端在 SMB 服务器上打开一个文件时，客户端和服务器都会分配一个 SMB 句柄（handle）来标识该连接。这就要求客户端和服务器双方都必须保存一份状态信息，用于记录客户端、文件、打开模式和句柄之间的关系。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/16.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/16.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 许多可扩展的分布式存储系统在节点发生故障时，会要求用户手动重试或重新连接。虽然另一个节点可能会接管故障节点的虚拟 IP 地址，但动态的状态信息（例如文件句柄）往往无法同步，导致连接无法自动恢复。要实现 SMB 客户端在节点故障后能够自动恢复访问，必须让状态信息在集群中共享，而这种共享需求也暴露了“共享-无结构（shared-nothing）”架构的局限性。
 
@@ -912,11 +912,11 @@ VAST 的 Manila 插件则进一步加强了 VAST 集群与开源云平台 OpenSt
 
 运行人工智能应用的 GPU 服务器所处理的数据量远远超过通用 CPU 所能处理的级别。即便配备多块 100 Gbps 的网络接口卡（NIC），GPU 仍会因为数据传输流程太慢而浪费大量时间：数据必须先从 NIC 的数据缓冲区复制到 CPU 内存中，然后再传输到 GPU 内存中，才能被用于分析。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/17.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/17.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 NVIDIA 的 GPUDirect Storage（GDS）通过 RDMA（远程直接内存访问）技术，为 NFS 数据提供了一条从 RNIC（RDMA 网络接口卡）直接传输到 GPU 内存的路径，从而绕过了 CPU 及其内存。GDS 消除了主内存到 GPU 之间 50 GB/s 带宽瓶颈，显著提升了 GPU 可访问的数据量。通过 GDS，服务器可以从多个 RNIC 并行向 GPU 传输数据，使总带宽最高可达 200 GB/s，大幅增强了 GPU 的数据处理能力。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/18.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/18.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 GPU Direct Storage 还显著降低了访问存储的系统开销。在我们对 VAST 集群与 NVIDIA DGX-A100 GPU 服务器进行测试时（如上图所示），将 NFS over RDMA 与多路径负载均衡结合，并利用 DGX-A100 配备的 8 个 200Gbps HDR InfiniBand 接口，已将总带宽从传统 NFSoTCP 的 2 GiB/s 提升到了 46 GiB/s。
 
@@ -930,7 +930,7 @@ GPU Direct Storage 还显著降低了访问存储的系统开销。在我们对 
 
 GPU Direct Storage 在执行访问时，会通过 RDMA 技术将数据从一个 PCIe 插槽上的 RNIC（远程直连网卡）直接传输到另一个插槽上的 GPU。VAST 的 NFS 多路径驱动是具备 NUMA 感知能力的，它会智能地将来自 VAST 集群的数据流量，分配到与 GPU 处于同一 CPU/NUMA 节点上的 RNIC 上。这样可以避免数据在 CPU 之间来回穿越桥接通道，从而绕开该瓶颈，提高整体的数据传输效率。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/19.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/19.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 #### Ecosystem Validations
 
@@ -951,7 +951,7 @@ GPU Direct Storage 在执行访问时，会通过 RDMA 技术将数据从一个 
 
 NVIDIA 的 DGX SuperPod 是一款专为人工智能打造的工程化超级计算机系统，基于 NVIDIA 针对 GPU 优化的 DGX 服务器构建。最新一代 SuperPod 配备了 127 台 DGX H100 服务器，每台服务器内含 8 块 H100 GPU 和 8 个 400 Gbps 的 InfiniBand 接口。
 
-{% include figure.liquid path="assets/img/2025-08-15-vast-data-store/20.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
+{% include figure.liquid path="assets/img/2025-08-18-vast-data-store/20.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 VAST 是首个（截至目前也是唯一一个）获得 NVIDIA 认证、可作为 SuperPod 实施方案中数据存储系统的 NAS 解决方案。其他获得认证的系统则普遍依赖结构更复杂的并行文件系统。详情可参见 VAST 官方新闻稿：[https://vastdata.com/press-releases/vast-data-achieves-nvidia-dgx-superpod-certification](https://vastdata.com/press-releases/vast-data-achieves-nvidia-dgx-superpod-certification)。
 
