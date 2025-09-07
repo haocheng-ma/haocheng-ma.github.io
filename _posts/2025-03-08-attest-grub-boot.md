@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Remote attestation for confidential VMs using grub boot
+title: "virtCCA: Measured Boot and Attestation in Grub Boot"
 date: 2025-03-08
 description: Our solution to establish trust for confidential VMs booting via firmware.
 tags: virtcca measurement attestation

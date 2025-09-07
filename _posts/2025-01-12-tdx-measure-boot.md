@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Measured boot in Intel TDX's grub boot
+title: "Intel TDX: Measured Boot and Attestation in Grub Boot"
 date: 2025-01-12
 description: How to build a trusted chain when launch TD guest using grub boot.
 tags: tdx measurement attestation

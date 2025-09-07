@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Key management in TPM based security
+title: Key Management in TPM based Security
 date: 2025-07-24
 description: TPMs are ridiculously complex.
 tags: tpm measurement attestation
