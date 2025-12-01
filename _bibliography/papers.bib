@@ -1,6 +1,21 @@
 ---
 ---
 
+@ARTICLE{10721447,
+  author={Zhang, Qizhi and Gao, Ya and Ma, Haocheng and He, Jiaji and Zhao, Yiqiang and Guo, Xiaolong},
+  journal={ACM Transactions on Embedded Computing Systems}, 
+  title={Boosting Cryptographic ICs' Side-Channel Resistance: A Formal Framework for Automatic Identification and Protection of Leaky Paths}, 
+  year={2025},
+  volume={24},
+  number={},
+  pages={1-25},
+  keywords={Hardware;Security and privacy;Side-channel analysis and countermeasures;Formal security models;},
+  doi={},
+  abstract={Side-channel analysis (SCA) attacks pose a significant threat to cryptographic integrated circuits (ICs). While designers have endeavored to introduce various countermeasures during the IC development phase, many of these solutions incur substantial overheads in terms of area, power, and performance. Additionally, they often necessitate a full-custom circuit design for effective deployment. This issue arises due to the absence of systematic methodologies and analytical tools for circuit designers to accurately identify the sources of side-channel leakage within the hardware design. In this article, we propose the concept of side-channel tracking logic and, building upon this foundation, introduce a novel framework that seamlessly integrates with commercial design flows to automatically identify and safeguard leaky paths. Our approach begins by pinpointing partial logic cells that exhibit the highest information leakage using dynamic correlation analysis. Subsequently, formal-based leakage property checking constructs comprehensive leaky paths centered on these cells. In this process, side-channel tracking logic was proposed and applied for the first time to trace and extract side-channel leakage paths. Based on this, an automated formal modeling and leakage property verification tool was designed. Once these paths are discerned, we deploy apt hardware countermeasures, encompassing Boolean masking and random precharge, to eradicate information leakage along these routes. This framework has been experimentally validated across different encryption circuits and the efficacy of our methodology is corroborated through both simulated and real-world measurements on FPGA implementations. Empirical results showcase an enhancement of over 1000x in side-channel resistance, incurring a modest overhead of less than 6.53% across power, area, and performance metrics.},
+  html={https://dl.acm.org/doi/abs/10.1145/3768154},
+  pdf={TECS_2025_Formal_Path.pdf}
+}
+
 @phdthesis{ma2023phd,
   author={Ma, Haocheng},
   type={Ph.D. Thesis},
