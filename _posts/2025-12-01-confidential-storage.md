@@ -4,7 +4,7 @@ title: Confidential Storage’s White Paper
 date: 2025-12-01
 description: Confidential Storage enhances data security in evolving storage architectures.
 tags: security
-categories: Storage
+# categories:
 # giscus_comments: true
 # related_posts: true
 toc:

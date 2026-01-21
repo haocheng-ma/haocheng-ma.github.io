@@ -3,8 +3,8 @@ layout: post
 title: "White Paper: The VAST Data Platform"
 date: 2025-08-14
 description: Translated version of VAST's white paper (part 1).
-tags: VAST SSD Cluster
-categories: Storage
+tags: storage
+categories: translations
 # giscus_comments: true
 # related_posts: true
 toc:
