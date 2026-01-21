@@ -51,15 +51,14 @@ DataSpace 的最终使命，是作为平台连接自然世界的接口，实现�
 
 现在你已经对 VAST Data Platform 有了基本了解，我们可以回顾大数据与深度学习工作负载的典型需求，看看 VAST 平台在各项关键指标上的契合程度：
 
-| Category            | Big Data                 | Deep Learning          | VAST Data Platform                                                     |
-| ----------------------- | ---------------------------- | -------------------------- | -------------------------------------------------------------------------- |
-| Data Types          | Structured & Semi-Structured, Tables, JSON, Parquet | Unstructured Text, Video, Instruments, etc.      | Structured and Unstructured |
-| Processor Type      | CPUs                         | GPUs, AI Processors & DPUs | Orchestrates across and manages CPU, GPU, DPU, etc.                        |
-| Storage Protocols   | S3                           | S3, RDMA file for GPUs     | S3, NFSoRDMA, SMB                                                          |
-| Dataset Size        | TB-scale warehouses          | TB–EB scale volumes        | 100 TB – EBs                                                               |
-| Namespace           | Single-Site                  | Globally-Federated         | Globally-Federated                                                         |
-| Processing Paradigm | Data-Driven (Batch)          | Continuous (Real-Time)     | Real-time and batch                                                        |
-
+| Category            | Big Data                                            | Deep Learning                               | VAST Data Platform                                  |
+| ------------------- | --------------------------------------------------- | ------------------------------------------- | --------------------------------------------------- |
+| Data Types          | Structured & Semi-Structured, Tables, JSON, Parquet | Unstructured Text, Video, Instruments, etc. | Structured and Unstructured                         |
+| Processor Type      | CPUs                                                | GPUs, AI Processors & DPUs                  | Orchestrates across and manages CPU, GPU, DPU, etc. |
+| Storage Protocols   | S3                                                  | S3, RDMA file for GPUs                      | S3, NFSoRDMA, SMB                                   |
+| Dataset Size        | TB-scale warehouses                                 | TB–EB scale volumes                         | 100 TB – EBs                                        |
+| Namespace           | Single-Site                                         | Globally-Federated                          | Globally-Federated                                  |
+| Processing Paradigm | Data-Driven (Batch)                                 | Continuous (Real-Time)                      | Real-time and batch                                 |
 
 ## Architecting the VAST Data Platform
 
@@ -73,23 +72,23 @@ VAST Data Platform 的架构由一组服务进程组成，这些进程既相互�
 
 **1. VAST DataStore** 是平台的核心存储层，负责在 VAST 的全球命名空间中存储与保护数据，同时通过传统存储协议（如 NFS、SMB、S3）以及内部协议将数据提供给 VAST DataBase 与 VAST DataEngine 使用。VAST DataStore 本身由三个重要的子层组成：
 
-- **物理层 / 块管理层（Physical or Chunk Management Layer）**  负责对 VAST Element Store 所使用的小型数据块（chunk）进行基础的数据保护与管理。它涵盖的功能包括：纠删码（Erasure Coding）、数据分布、数据压缩与去重、静态加密（Encryption at Rest）以及设备管理。这一层的作用是保障数据的可靠性、存储效率和底层硬件的运维能力。
+- **物理层 / 块管理层（Physical or Chunk Management Layer）** 负责对 VAST Element Store 所使用的小型数据块（chunk）进行基础的数据保护与管理。它涵盖的功能包括：纠删码（Erasure Coding）、数据分布、数据压缩与去重、静态加密（Encryption at Rest）以及设备管理。这一层的作用是保障数据的可靠性、存储效率和底层硬件的运维能力。
 
-- **逻辑层 / VAST Element Store（Logical Layer aka VAST Element Store）**  基于元数据将底层数据块组织成用户可见的高层数据对象（Data Elements），例如文件、对象（object）、表格（table）和卷（volume）等。VAST Element Store 不仅将这些元素统一编入一个全球命名空间（适用于单个 VAST 集群），还可以借助 VAST DataSpace 跨集群构建一个全球一致的分布式命名空间。
+- **逻辑层 / VAST Element Store（Logical Layer aka VAST Element Store）** 基于元数据将底层数据块组织成用户可见的高层数据对象（Data Elements），例如文件、对象（object）、表格（table）和卷（volume）等。VAST Element Store 不仅将这些元素统一编入一个全球命名空间（适用于单个 VAST 集群），还可以借助 VAST DataSpace 跨集群构建一个全球一致的分布式命名空间。
 
-    通俗讲，VAST Element Store 就像是“被伽马射线照射后的文件系统”，它以极强的灵活性将底层数据块整合成跨地域可访问的全局数据元素（如文件、对象、表格、块卷等）。  在这个层面上，系统还提供了路径或元素级的服务功能，如访问控制、数据加密、快照、克隆、数据副本等。
+  通俗讲，VAST Element Store 就像是“被伽马射线照射后的文件系统”，它以极强的灵活性将底层数据块整合成跨地域可访问的全局数据元素（如文件、对象、表格、块卷等）。 在这个层面上，系统还提供了路径或元素级的服务功能，如访问控制、数据加密、快照、克隆、数据副本等。
 
-- **协议层（Protocol Layer）**  负责为这些数据元素提供多协议的访问方式。所有协议模块是对等的、独立的，它们可以根据数据类型为外部应用程序提供完整的多协议访问能力。这意味着不论用户使用哪种接口（如 NFS、S3、SMB），都能访问相同的数据元素，并保持数据一致性。
+- **协议层（Protocol Layer）** 负责为这些数据元素提供多协议的访问方式。所有协议模块是对等的、独立的，它们可以根据数据类型为外部应用程序提供完整的多协议访问能力。这意味着不论用户使用哪种接口（如 NFS、S3、SMB），都能访问相同的数据元素，并保持数据一致性。
 
 **2. 执行层（The Execution Layer）** 负责提供并调度计算逻辑，通过数据驱动的处理方式将数据转化为洞察。该层包含两个核心服务：
 
 - **VAST DataBase** – 该服务负责管理结构化数据。VAST DataBase 专为满足在线事务处理（OLTP）所需的一致性、数据组织能力以及在线分析处理（OLAP）所需的复杂查询能力而设计，且具备支持当今 AI 应用所需的扩展性。
-在逻辑层负责存储表格数据、协议层提供基础 SQL 访问的基础上，VAST DataBase 将这些表格进一步转化为功能完整的数据库管理系统，支持如排序键、外键、连接查询等高级数据库特性。
+  在逻辑层负责存储表格数据、协议层提供基础 SQL 访问的基础上，VAST DataBase 将这些表格进一步转化为功能完整的数据库管理系统，支持如排序键、外键、连接查询等高级数据库特性。
 
 - **VAST DataEngine** – 该组件赋予系统智能处理能力，使其能对原始数据进行处理、转换，进而推理出有价值的信息。DataEngine 可根据事件触发机制（如满足某一筛选条件的对象到达或某个 Lambda 函数被调用）对数据元素执行任务，如人脸识别、数据泄露防护扫描、视频转码等。  
-DataEngine 同时作为全球任务调度器，在公有云与私有资源构成的全球网络中，综合计算资源、数据访问性和成本等因素，将计算任务调度至最合适的执行位置。
+  DataEngine 同时作为全球任务调度器，在公有云与私有资源构成的全球网络中，综合计算资源、数据访问性和成本等因素，将计算任务调度至最合适的执行位置。
 
-分层架构本身并不是什么新概念——IT 系统早已习惯于将关系型数据库运行在 SAN 存储之上，再结合如 Kubernetes 这类编排引擎进行调度。但 VAST Data Platform 的革新之处在于：  一是各个服务之间打破了传统层级边界，实现了高度集成；  二是所有这些服务都运行在名为 **DASE（Disaggregated Shared Everything）** 的集群架构上，这种架构解耦了计算与存储资源，又能共享所有数据，从根本上提升了系统的灵活性、可扩展性与性能。
+分层架构本身并不是什么新概念——IT 系统早已习惯于将关系型数据库运行在 SAN 存储之上，再结合如 Kubernetes 这类编排引擎进行调度。但 VAST Data Platform 的革新之处在于： 一是各个服务之间打破了传统层级边界，实现了高度集成； 二是所有这些服务都运行在名为 **DASE（Disaggregated Shared Everything）** 的集群架构上，这种架构解耦了计算与存储资源，又能共享所有数据，从根本上提升了系统的灵活性、可扩展性与性能。
 
 ## The Disaggregated Shared Everything Architecture
 
@@ -106,6 +105,7 @@ DASE 架构在数据系统集群设计中引入了两个颠覆性的理念：
 {% include figure.liquid path="assets/img/2025-08-14-vast-data-platform/4.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 从上文要点和示意图来看，你可能已经注意到，DASE 架构主要由两个基本组件组成：
+
 - **CNodes（计算节点）**：负责运行平台上的全部软件服务与计算逻辑；
 - **DBoxes（数据盒子）**：存放所有的存储介质与系统状态，是平台的持久化存储层。
 
@@ -178,6 +178,7 @@ CNode 与 DBox 中 SSD 之间通过 NVMe-oF 建立的超低延迟直连通道，
 擦除闪存时需要施加高电压，这会在物理层面对闪存单元的绝缘层造成损伤。随着擦写次数的累积，绝缘层损伤越来越严重，最终会导致电子“泄漏”，穿透硅基绝缘体。以 QLC 为例，每个单元需要表示 16 种不同的电压等级（即 4 位数据），通常分布在 0 到 3 伏特之间。随着每个电压等级之间的差距变小，即使少量电子泄漏也可能引起数据错误（比如原本是 1 变成了 0），这就是高密度闪存耐久性变差的根本原因。
 
 VAST 的通用存储系统通过两种方式减少闪存磨损：
+
 1. 采用创新的数据结构，能更好地贴合低成本超大规模 SSD 的内部物理结构，这在传统系统中从未尝试过；
 2. 利用容量巨大的 SCM 写缓冲区来吸收写入压力，从而为写操作留出充足的时间与空间，避免直接磨损闪存。
 
@@ -189,13 +190,13 @@ VAST 的通用存储系统通过两种方式减少闪存磨损：
 
 {% include figure.liquid path="assets/img/2025-08-14-vast-data-platform/7.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
-而 DASE 架构彻底消除了这些限制，其核心设计理念是将计算能力与存储容量完全解耦：计算由 CNode（计算节点） 提供，  存储容量由 DBox（存储机箱） 提供，二者互不依赖。
+而 DASE 架构彻底消除了这些限制，其核心设计理念是将计算能力与存储容量完全解耦：计算由 CNode（计算节点） 提供， 存储容量由 DBox（存储机箱） 提供，二者互不依赖。
 
 这带来了极大的灵活性：对于训练 AI 模型（这种负载涉及大量小文件随机访问）或运行复杂数据库查询的用户来说，他们可能会为每个 DBox 配置多达 12 个 CNode，以获得足够计算能力；而对于将 VAST 用作冷备份、归档等低活跃数据存储的用户来说，每个 DBox 可能只需不到一个 CNode 就能满足需求。
 
 当用户需要扩展容量时，只需新增 DBox，无需同时增加计算资源和功耗——这是传统纵向扩展（scale-up）存储系统中的经典特性，却早已被大多数横向扩展厂商所抛弃。虽然“只扩容”本身已经很经济、很实用，但传统存储厂商在需要提升某一容量下的计算能力时，通常只有两个选择：用“叉车式升级”，替换更强的新节点；增加节点数量，但使用更小容量的硬盘，从而提升每 PB 对应的 CPU 能力。
 
-VAST 则提供了更优雅的方式。  当用户发现：AI 引擎能从原本的“冷数据归档”中提取有价值的信息，新版本应用产生了大量的小文件随机访问负载，或者某个应用比预期更受欢迎、使用更广泛时，  他们可以仅通过增加 CNode 数量来扩展计算能力。
+VAST 则提供了更优雅的方式。 当用户发现：AI 引擎能从原本的“冷数据归档”中提取有价值的信息，新版本应用产生了大量的小文件随机访问负载，或者某个应用比预期更受欢迎、使用更广泛时， 他们可以仅通过增加 CNode 数量来扩展计算能力。
 
 系统会在这些新加入的 CNode 上自动重新平衡虚拟 IP 地址（VIPs）和计算任务分布，无需手动干预，确保整个集群始终保持最优的性能与资源利用率。
 
@@ -204,17 +205,18 @@ VAST 则提供了更优雅的方式。  当用户发现：AI 引擎能从原本�
 对于采用“共享无物”（shared-nothing）架构的用户来说，一旦厂商发布新一代节点产品，他们往往会面临棘手的升级困境。因为在这种架构中，一个存储池内的所有节点必须完全一致，举例来说，如果某客户当前有一个由 16 个已服役 3 年的节点组成的集群，想要扩展 50% 的容量，他面临两种选择：
 
 - 购买 8 个相同型号的旧节点，并为现有 16 个节点延长技术支持
-    - 问题在于，这类延长支持通常总共最多提供 5~6 年服务周期，这意味着在未来 2~3 年内，客户需要整体更换所有 24 个节点
+  - 问题在于，这类延长支持通常总共最多提供 5~6 年服务周期，这意味着在未来 2~3 年内，客户需要整体更换所有 24 个节点
 - 购买 5 个新型号节点（每个容量是旧型号的两倍）并新建一个存储池
-    - 问题在于系统性能将取决于数据所在的具体存储池
-    - 多池管理会增加系统复杂性
-    - 小型新集群在资源利用率和扩展效率上都较差
+  - 问题在于系统性能将取决于数据所在的具体存储池
+  - 多池管理会增加系统复杂性
+  - 小型新集群在资源利用率和扩展效率上都较差
 
 情况会更加复杂的是，如果某些新功能（如内联去重、压缩）只能在新型号节点的更强处理器上运行，那旧节点便无法享受这些关键特性，进一步加剧了架构不一致带来的问题。
 
-VAST 提出的 DASE 架构是一种“非对称架构”，这并不仅仅是指客户可以通过灵活配置每个存储机箱（DBox）所搭配的 CNode（计算节点）数量，来自由调整每 PB 数据所分配的计算资源。  
+VAST 提出的 DASE 架构是一种“非对称架构”，这并不仅仅是指客户可以通过灵活配置每个存储机箱（DBox）所搭配的 CNode（计算节点）数量，来自由调整每 PB 数据所分配的计算资源。
 
 “非对称”还意味着：
+
 - 在 DASE 系统中，运行 VAST CNode 容器的服务器、DBox 存储机箱以及内部使用的 SSD 都可以异构配置、灵活组合，
 - 系统可以在不同代、不同性能、不同规格的组件间协调工作，无需强制“整齐划一”。
 
@@ -288,10 +290,12 @@ DASE 集群包含四个主要的逻辑网络，分别承担不同的通信任务
 在此模式下，每个 CNode 配备一张 100 Gbps 的网络接口卡（NIC）。通过一根分线电缆将这张卡拆分为两个 50 Gbps 的连接口，分别连接到两个 Fabric 交换机中。每条 50 Gbps 连接同时承载两个 VLAN：一个用于 NVMe 后端网络，另一个用于主机数据流量。
 
 这种连接方式具有以下优点：
+
 - 每个 CNode 只需配置一张 RDMA 网络接口卡（RNIC），降低硬件复杂度和成本
 - 所有网络流量通过少量 100 Gbps 链路进行汇聚，并通过 MLAG 实现高可用，这样可显著减少对客户主机交换机端口数量的需求
 
 但如果这种方式是“完美方案”，就不会存在其他替代选项。它也有一些限制和不足：
+
 - 主机网络必须使用与 Fabric 网络相同的网络类型与协议
 - 如果集群使用 Infiniband 构建 NVMe Fabric，则只能支持 Infiniband 主机接入，限制较大
 - 在 100 Gbps Fabric 中使用 40、25、10 Gbps 的以太网接入时，连接成本较高且不灵活
@@ -306,14 +310,16 @@ DASE 集群包含四个主要的逻辑网络，分别承担不同的通信任务
 当 VAST 客户需要将来自多个不同网络、采用不同技术或有不同安全需求的客户端接入同一个 DASE 集群时，可以为 CNode 安装第二张网络接口卡（NIC），这张卡直接连接到该 CNode 所服务的特定网络，从而实现与多个网络的并行连接。
 
 “通过 CNode 连接（Connect via CNode）”的优点：
+
 - 支持通过不同技术协议接入 DASE 集群：
-    - 配有 Infiniband 网卡的 CNode 可以服务于 Infiniband 客户端
-    - 配有 Ethernet 网卡的 CNode 可以服务于以太网客户端
-    - 或通过 Fabric 交换机为 Ethernet 客户端提供接入
+  - 配有 Infiniband 网卡的 CNode 可以服务于 Infiniband 客户端
+  - 配有 Ethernet 网卡的 CNode 可以服务于以太网客户端
+  - 或通过 Fabric 交换机为 Ethernet 客户端提供接入
 - 支持接入更高速的前沿网络技术，如 200 Gbps 以太网
 - 能够连接多个安全隔离区域（Security Zones），无需配置跨网络路由，简化安全策略管理
 
 但也存在一些缺点：
+
 - 需要额外的网络接口卡、交换机端口、IP 地址等资源，增加一定的部署与运维成本
 
 正如上文所述，VAST 的架构允许客户灵活混用“通过交换机连接（Connect via Switch）”和“通过 CNode 连接（Connect via CNode）”两种模式。例如，某客户拥有少量 Infiniband 主机，可以仅为部分 CNode 安装 IB 网卡以接入这些主机；而其他以太网客户端则仍通过共享的 Ethernet Fabric 交换机接入集群，从而在满足连接需求的同时，最大限度地减少交换机端口资源的使用。
@@ -327,6 +333,7 @@ DASE 集群包含四个主要的逻辑网络，分别承担不同的通信任务
 {% include figure.liquid path="assets/img/2025-08-14-vast-data-platform/12.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 这种 Leaf-Spine 网络结构的优势在于：
+
 - 支持 DASE 集群 横向扩展至超过 100 台设备（appliances）
 - 如果使用高端口数的 director 级 Spine 交换机，可进一步提升扩展上限
 - 具备更高的带宽聚合能力和更低的网络延迟，适配 NVMe-oF 对网络性能的极高要求
@@ -337,6 +344,7 @@ DASE 集群包含四个主要的逻辑网络，分别承担不同的通信任务
 在过去十多年里，存储行业一直深信“无共享（shared-nothing）”存储架构是实现存储规模扩展与成本节省的最佳方式。自从 Google 于 2003 年发布其文件系统架构白皮书之后，几乎所有类型的存储系统架构都将“无共享”模式作为标配，包括超融合存储、可扩展文件存储、对象存储、数据仓库系统等。
 
 然而，十多年过去了，“无共享”架构所依赖的一些基本前提，如今已不再成立，主要原因如下：
+
 - 无共享系统最初设计的前提，是将磁盘与处理器（CPU）物理共置，因为当时网络速度远慢于本地存储。然而随着 NVMe over Fabrics（NVMe-oF）的出现，现在即便在远程访问 SSD 和 SCM 时，也能实现高性能，不再需要将 CPU 与存储设备强绑定。
 - 无共享架构迫使用户在扩展计算能力和存储容量时必须“打包”进行，导致基础设施扩展缺乏灵活性。相比之下，如果能够根据数据集对访问速度的需求单独扩展 CPU，将更为高效灵活。
 - 无共享系统限制了存储效率。因为每个节点都“拥有”一部分存储介质，为了容错，就必须在节点之间进行纠删码（erasure coding），这限制了条带（stripe）的宽度与切片（shard）效率；同时还需在多个节点复制数据缩减的元数据，影响了数据压缩与去重的效率。而在“全共享（shared-everything）”架构中，没有任何一台机器专属某些 SSD，因此可以构建更宽、更高效的 RAID 条带结构，并集中管理全局数据缩减元数据，提升整体存储效率。

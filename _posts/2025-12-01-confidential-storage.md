@@ -12,6 +12,7 @@ toc:
 ---
 
 本文重点阐述机密存储的理念和方案，修订历史：
+
 - v1.0 - 2025.9.18 - [华为算力基础设施安全技术白皮书](https://www-file.huawei.com/admin/asset/v1/pro/view/6812dab6dd4e4640b11619e401db1c47.pdf) - 4. 存储场景算力基础设施安全。
 
 ---

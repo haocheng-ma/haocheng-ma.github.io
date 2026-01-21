@@ -15,11 +15,10 @@ toc:
 ---
 
 Based on the analysis of measurement and attestation techniques, we propose a solution to establish trust for confidential VMs (CVMs) booting via firmware (aka grub boot). The measured boot follows the [UEFI specification for confidential computing](https://uefi.org/specs/UEFI/2.10/38_Confidential_Computing.html#), details please refer to my previous article. Next, We developed a software development kit (SDK) and open-sourced it in the [openEuler/virtCCA_sdk](https://gitee.com/openeuler/virtCCA_sdk). It provides a suite of tools and libraries to enable remote attestation for grub boot. Today, we'll take a deep dive into this SDK.
- 
 
-## Overview of attestation case 
+## Overview of attestation case
 
-We provices a simple demo [attestation/samples](https://gitee.com/openeuler/virtCCA_sdk/tree/master/attestation/samples) to showcase virtCCA attestation, consisting of a client and a server. The server runs inside the CVM, while the client runs locally (e.g., on a user machine). The client simulates a user with a local verifier and key management. The server uses the [attestation/sdk](https://gitee.com/openeuler/virtCCA_sdk/tree/master/attestation/sdk) to get the device certificate and attestation report (aka attestation token), while the client parses and verifies them. If a CVM boots via grub boot, the server also collects event logs to support attestation. The server and client communicate over TCP. Another demo featuring TLS transmission is available in [attestation/rats-tls](https://gitee.com/openeuler/virtCCA_sdk/tree/master/attestation/rats-tls). *Please note that these demos are for reference only.*
+We provices a simple demo [attestation/samples](https://gitee.com/openeuler/virtCCA_sdk/tree/master/attestation/samples) to showcase virtCCA attestation, consisting of a client and a server. The server runs inside the CVM, while the client runs locally (e.g., on a user machine). The client simulates a user with a local verifier and key management. The server uses the [attestation/sdk](https://gitee.com/openeuler/virtCCA_sdk/tree/master/attestation/sdk) to get the device certificate and attestation report (aka attestation token), while the client parses and verifies them. If a CVM boots via grub boot, the server also collects event logs to support attestation. The server and client communicate over TCP. Another demo featuring TLS transmission is available in [attestation/rats-tls](https://gitee.com/openeuler/virtCCA_sdk/tree/master/attestation/rats-tls). _Please note that these demos are for reference only._
 
 Below outlines the interaction between the client and the server:
 
@@ -83,7 +82,7 @@ The tool `gen_rim_ref` is similar to [cca-realm-measurements](https://github.com
 
 ### Reference values of CVM image
 
-The `cvm-image-rewriter` tool is used to create, customize and/or measure theCVM image (.qcow2) to support grub boot and attestation. it computes the SHA-256 hashes of components in CVM image, such as grub binary (BOOTAA64.EFI), grub configuration (grub.cfg), kernels and corresponding initramfs images. These hashes are saved in a JSON file (image_reference_measurement.json), and will be used as reference measurements in attestation. 
+The `cvm-image-rewriter` tool is used to create, customize and/or measure theCVM image (.qcow2) to support grub boot and attestation. it computes the SHA-256 hashes of components in CVM image, such as grub binary (BOOTAA64.EFI), grub configuration (grub.cfg), kernels and corresponding initramfs images. These hashes are saved in a JSON file (image_reference_measurement.json), and will be used as reference measurements in attestation.
 
 Tp be more specific, this tool mounts the CVM image using `guestmount`, then measures its boot components.
 
@@ -95,7 +94,7 @@ It compiles a C program (measure_pe.c) to create the MeasurePe binary used to ca
 
 This function scans the `/boot` directory within the mounted image for kernel images (excluding rescue kernels).
 
-For each found kernel (named vmlinuz-*), it attempts to uncompress the image, calculates its SHA-256 hash, and then measures the corresponding initramfs image.
+For each found kernel (named vmlinuz-\*), it attempts to uncompress the image, calculates its SHA-256 hash, and then measures the corresponding initramfs image.
 
 These measurements are aggregated into a JSON file named image_reference_measurement.json with the following structure:
 
@@ -114,6 +113,7 @@ These measurements are aggregated into a JSON file named image_reference_measure
     "hash_alg": "sha-256"
 }
 ```
+
 This JSON file will be used in attestation, serving as reference measurements of the CVM image.
 
 ## How to verify attestation token?
@@ -132,7 +132,6 @@ flowchart TD
 ```
 
 In this process, the device certificate is verified using the root and subordinate certificates. The integrity of the attestation token is then validated against the device certificate. For grub boot, the following steps are done with the support of event logs and reference values of measurements. Please refer to `verify_token` function in [client.c](https://gitee.com/openeuler/virtCCA_sdk/blob/master/attestation/samples/src/client.c) to see detailed codes.
-
 
 <!-- <script>
   mermaid.initialize({ startOnLoad: true });
