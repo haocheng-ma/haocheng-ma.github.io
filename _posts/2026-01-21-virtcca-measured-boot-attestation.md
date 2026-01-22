@@ -282,7 +282,15 @@ virtCCA 提供了用户态工具包 [virtCCA SDK](https://gitcode.com/openeuler/
 
 如下展示了 Attestation Demo 的具体流程，实际部署与使用请参阅 [使能远程证明](https://www.hikunpeng.com/document/detail/zh/kunpengcctrustzone/tee/cVMcont/kunpengtee_16_0036.html) 的特性指南。
 
-<div class="mermaid">
+<div id="mermaid-target"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    mermaid.initialize({ startOnLoad: false });
+
+    const graphConfig = `
 sequenceDiagram
     autonumber
     
@@ -307,35 +315,41 @@ sequenceDiagram
         S-->>C: Deliver Signed Evidence
 
         alt UEFI Boot
-        C->>S: Request Event Log (CCEL)
-        S-->>C: Send CCEL Data
+            C->>S: Request Event Log (CCEL)
+            S-->>C: Send CCEL Data
         end
     end
 
     rect rgb(255, 251, 235)
         Note over C: Phase 2: Appraisal & Verification
-        Note right of C: Input: Reference Values, Endorsements, Verification Policy
+        Note right of C: Input: Reference Values, Endorsements, Appraisal Policy
 
-        C->>C: Validate Certificate Chain and Signature
-        C->>C: Compare Freshness and Hash Binding
-        C->>C: Evaluate Platform and CVM Token Details
+        C->>C: Verify Token Signature based on Endorsements
+        C->>C: Verify Token Claims based on Reference Values
 
         alt Direct Kernel Boot
             Note right of C: Match RIM against Reference Values
         else UEFI Boot
             Note right of C: Parse & Replay CCEL<br/>Compare Token REMs with Replayed REMs<br/>Extract & Verify Firmware States
         end
-
-        C->>S: 3. Final Attestation Result (Success/Fail)
+        
+        C->>C: Apply Appraisal Policy for Final Attestation Result
+        C->>S: Attestation Result (Standardized Claims regarding Trustworthiness)
     end
+    `;
 
-</div>
+    const element = document.getElementById('mermaid-target');
+    mermaid.render('graph-id-1', graphConfig).then(({ svg }) => {
+        element.innerHTML = svg;
+    }).catch(err => {
+        console.error("Mermaid 渲染失败:", err);
+        element.innerHTML = "<p style='color:red;'>Mermaid 图表渲染失败，请检查控制台报错。</p>";
+    });
+});
+</script>
 
 ## Summary
 
 度量启动和远程证明这玩意儿，大家一直聊得挺热闹，谁都想讲好“看得见的信任”这个故事。但对技术人来说，确实是全方位的折腾：从最底下的芯片、固件、OS 一路磨到应用和基建，中间还得兼顾标准和生态。等真的忙活完一通，有时也说不清价值到底体现在哪，说到底技术本身也没多炫酷，🥲😅。
 
 总之，virtCCA 目前在这块做了一些工作，还有很多不完善的地方，大家 CCA 加油吧。
-
-<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({startOnLoad:true});</script>
