@@ -9,187 +9,242 @@
 
 <url>
   <loc>https://mahaocheng.me/</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:31+00:00</lastmod>
   <priority>1.00</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/blog/</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/publications/</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://mahaocheng.me/blog/2025/attest-grub-boot/</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <loc>https://mahaocheng.me/blog/2026/virtcca-measured-boot-attestation/</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://mahaocheng.me/blog/2025/confidential-storage/</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://mahaocheng.me/blog/2025/vast-ai-os/</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://mahaocheng.me/blog/2025/vast-data-store/</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://mahaocheng.me/blog/2025/vast-data-platform/</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://mahaocheng.me/blog/2025/tpm-based-security/</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://mahaocheng.me/blog/2025/tdx-measure-boot/</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://mahaocheng.me/blog/2026/</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mahaocheng.me/blog/tag/security/</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mahaocheng.me/blog/category/virtcca/</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/blog/2025/</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
-  <loc>https://mahaocheng.me/blog/tag/virtcca/</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <loc>https://mahaocheng.me/blog/tag/storage/</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
-  <loc>https://mahaocheng.me/blog/tag/measurement/</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <loc>https://mahaocheng.me/blog/category/translations/</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
-  <loc>https://mahaocheng.me/blog/tag/attestation/</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <loc>https://mahaocheng.me/blog/page/2/</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
-  <loc>https://mahaocheng.me/blog/category/cc/</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <loc>https://mahaocheng.me/assets/pdf/PhD_Thesis_2023.pdf</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
-  <loc>https://mahaocheng.me/blog/2025/tdx-measure-boot/</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://mahaocheng.me/blog/tag/tdx/</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <loc>https://mahaocheng.me/assets/pdf/TECS_2025_Formal_Path.pdf</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/TIFS_2024_EMSim+.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mahaocheng.me/assets/pdf/TCAS_2024_EO_Shield.pdf</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/ASPDAC_2024_Phi1.5B.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/AsianHOST_2023_NNLeak.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/ICCAD_2023_EMSim+.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/TCAS_2023_Kyber_SCA.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/TIFS_2023_EMSim.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/EMSim2021117.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/ASPDAC_2023_EO_Shield.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/AsianHOST_2022_Kyber_SCA.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/4301FINAL.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/DAC_2022_PathFinder.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/1040FINAL.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:31+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/TCAD_2022_CML.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/TCAD_2022_RTLEM.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/JETCAS_2021_CAD4EM_CLK.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/TECS_2021_HTGA.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/TCAD_2021_TDC.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/TCAD_2021_CAD4EM_PR.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/HOST_2020_DeepEM.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/AsianHOST_2020_Watermark.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/TECS_2020_HTGF.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/DAC_2020_OnChip.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/ASPDAC_2020_RTLEM.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/Electronics_2019_EncLogic.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/JoET_2019_HTGL.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 <url>
   <loc>https://mahaocheng.me/assets/pdf/Sensors_2018_FEFS.pdf</loc>
-  <lastmod>2025-07-19T03:39:45+00:00</lastmod>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mahaocheng.me/blog/category/tpm/</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://mahaocheng.me/blog/category/tdx/</loc>
+  <lastmod>2026-01-22T03:34:32+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 
