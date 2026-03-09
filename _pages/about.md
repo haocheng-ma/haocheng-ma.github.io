@@ -31,3 +31,7 @@ My research focuses on Hardware Security and Confidential Computing, with partic
 - Hardware-enabled Side-channel Attacks and Defenses
 - Hardware-based Trusted Execution Environment (TEE)
 - Hardware Root of Trust (RoT), Measured boot and Attestation
+
+> "Ideas are cheap, and there are lots of them in the air. Your skill comes in when you decide which one to work on, and how well you execute on it."
+>
+> — John Schulman, [An Opinionated Guide to ML Research](http://joschu.net/blog/opinionated-guide-ml-research.html)
