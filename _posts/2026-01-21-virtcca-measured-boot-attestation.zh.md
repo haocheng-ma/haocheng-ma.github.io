@@ -5,52 +5,55 @@ date: 2026-01-21
 description: An exploration of the measurement and attestation framework within Huawei virtCCA.
 tags: security
 categories: virtcca
+lang: zh
+hidden: true
+permalink: /blog/2026/virtcca-measured-boot-attestation/zh/
 # giscus_comments: true
 # related_posts: true
 toc:
   sidebar: left
 ---
 
-💭 A quick note: virtCCA's measured-boot and remote-attestation features landed in stages as the product was commercialized, scattering the code across components and fragmenting the documentation. This article consolidates the framework at the architectural level, so readers don't have to dig through scattered older sources.
+💭 碎碎念：关于 virtCCA 的度量启动和远程证明，其特性随商业化进程分阶段落地，导致相关代码散落在各个组件中，文档也比较碎片化。趁此机会，本文将从架构层面进行统一的梳理与分析，希望能帮大家理清脉络，省去翻阅零散旧资料的周折。
 
 ---
 
 ## Introduction
 
-Huawei virtCCA is a confidential-computing solution built on the TrustZone and Secure EL2 features of the Kunpeng processor. It brings the Arm CCA architectural concepts to existing hardware, giving applications and data a hardware-rooted, verifiable Trusted Execution Environment (TEE) that isolates them from unauthorized access or tampering at runtime.
+Huawei virtCCA 是基于鲲鹏处理器 TrustZone 与 Secure EL2 特性打造的机密计算方案。它在现有硬件上先行实践了 ARM CCA 架构理念，通过构建“基于硬件且可验证”的可行执行环境（TEE），为运行中的应用和数据提供硬件隔离，防止任何未经授权的访问或篡改。
 
-virtCCA bridges toward native CCA hardware while migrating business applications without modification. Until CCA hardware is widespread, it gives enterprises a practical option with high performance, strong security, and forward compatibility. See [virtCCA: Virtualized Arm Confidential Compute Architecture with TrustZone](https://arxiv.org/abs/2306.11011) and the
-[Confidential Computing TEE Suite Technical White Paper](https://www.hikunpeng.com/document/detail/zh/kunpengcctrustzone/tee/cVMcont/kunpengtee_19_0003.html) for details.
+作为向原生 CCA 硬件平滑演进的桥梁，virtCCA 实现了业务应用的零改造迁移。它在 CCA 硬件大规模普及前，为企业提供了兼具高性能、高安全性与前瞻兼容性的实践方案。详见 [virtCCA: Virtualized Arm Confidential Compute Architecture with TrustZone](https://arxiv.org/abs/2306.11011) 与
+[机密计算TEE套件技术白皮书](https://www.hikunpeng.com/document/detail/zh/kunpengcctrustzone/tee/cVMcont/kunpengtee_19_0003.html)。
 
-As Figure 1 shows, hardware isolation draws the trust boundary, and Measured Boot and Attestation make the state inside it cryptographically verifiable:
+如图 1 所示，硬件隔离机制界定了信任边界，度量启动（Measured Boot）与远程证明（Attestation）通过密码学方式赋予该边界可验证的状态可信：
 
-- Measured Boot: following "measure before execute", virtCCA hashes the TCB state during platform and CVM (Confidential VM) boot, then stores the results in tamper-resistant registers.
+- 度量启动：遵循“度量先于执行”的原则，在 virtCCA 平台和机密虚拟机（CVM） 的启动过程中，通过哈希度量记录 TCB 的完整性状态，并将度量结果存储到不可篡改寄存器中。
 
-- Attestation: a hardware-protected Attestation Key signs the measurements to produce an Attestation Report, proving the CVM and its platform are genuine and untampered.
+- 远程证明：利用硬件保护的认证密钥（Attestation Key）对度量结果进行数字签名，生成具有证据效力的证明报告（Attestation Report），证明 CVM 及底层平台是真实、安全且未被篡改的。
 
-Together they build a chain of trust from the hardware Root of Trust (RoT) up to the CVM. A Relying Party can then verify remotely that a workload runs inside a CVM on a genuine virtCCA platform and meets the expected security baseline.
+两者协同配合，构建了从底层硬件信任根（RoT）到上层 CVM 的完整信任链，这使得依赖方（Relying Party）能够远程确信：目标负载运行在真实 virtCCA 平台的 CVM 内，且符合预期安全基准，从而满足机密计算的信任验证需求。
 
 {% include figure.liquid path="assets/img/2026-01-21-virtcca-measured-boot-attestation/measurement-and-attestation.png" class="img-fluid rounded z-depth-0 mx-auto d-block" width="80%" zoomable=true %}
 
 <div class="caption">
-    Figure 1. Measured Boot and Attestation
+    Figure 1. Measured Boot and Attestation
 </div>
 
-💡 TCB (Trusted Computing Base): the set of hardware, firmware, and software components that must be trusted to keep the system secure. It includes hardware (CPU, RoT), firmware (TF-A, TMM), and critical Guest OS code (UEFI, the GRUB bootloader, the OS kernel). If any TCB component is exploited or modified, the system's confidentiality and integrity no longer hold.
+💡 TCB (Trusted Computing Base) ：为了维持系统安全性而必须被信任的所有硬件、固件及软件组件的集合。这既包含 CPU、RoT 等硬件和 TF-A、TMM 等固件，也涵盖 Guest OS 侧的关键代码，如 UEFI、Bootloader（Grub）以及操作系统内核（Kernel）。如果 TCB 中的任何一个组件出现了漏洞或被恶意篡改，整个系统的安全性（机密性、完整性）都将无法得到保证。
 
 ## Measured Boot
 
-The virtCCA architecture consists of the CVM and the underlying virtCCA platform (hardware plus firmware) that hosts it — mirroring the Realm / CCA Platform split in the Arm CCA specification (see [Arm CCA Security Model 1.0](https://developer.arm.com/documentation/DEN0096/latest)). Given this separation, end-to-end Measured Boot comes in two interlocking phases — Platform Measurement and CVM Measurement — shown in Figure 2. Only when the Platform Measurement verifies does the CVM Measurement it carries mean anything.
+virtCCA 架构由 CVM 及其底层支撑环境 virtCCA 平台（硬件与固件集合）共同构成，这在逻辑上映射了 Arm CCA 规范中 Realm 与 CCA Platform 的实体关系（参考 [Arm CCA Security Model 1.0](https://developer.arm.com/documentation/DEN0096/latest) ）。基于这种实体解耦，完整的度量启动由相互衔接的平台度量和 CVM 度量组成，如图 2 所示，也只有当平台度量通过验证，其承载的 CVM 度量才具备实质性的安全意义。
 
 {% include figure.liquid path="assets/img/2026-01-21-virtcca-measured-boot-attestation/platfom-cvm-measurement.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 <div class="caption">
-    Figure 2. Platform Measurement and CVM Measurement
+    Figure 2. Platform Measurement and CVM Measurement
 </div>
 
 ### Platform Measurement
 
-Platform Measurement follows a chained trust-transfer model. During hardware initialization BSBC acts as the Core Root of Trust for Measurement (CRTM); the HSM running on InSE acts as the Root of Trust for Storage (RTS) and the Root of Trust for Reporting (RTR), storing results in InSE's protected internal SRAM (Figure 2). By boot order, virtCCA follows the Arm CCA firmware-boot specification (Trusted Subsystems → Application PE → Monitor → RMM). In practice, the functional-component boundaries differ from Arm CCA because of constraints in the existing Kunpeng hardware, as the table below shows.
+平台度量遵循“链式信任传递”原则，在硬件初始化阶段，BSBC 充当了核心度量信任根 (CRTM) ，运行 HSM 的 InSE 则作为存储信任根（RTS）和报告信任根（RTR），确保度量结果存储于 InSE 内部受保护的 SRAM 中，如图 2 所示。在流程设计上，virtCCA 对标 Arm CCA 的固件引导规范（即 Trusted Subsystems → Application PE → Monitor → RMM）。但在具体的工程实现上，受限于现有鲲鹏硬件的实现架构，相关功能组件的划分与 Arm CCA 存在差异，如下表所示。
 
 <div style="overflow-x: auto;">
   <table style="width: 100%; border-collapse: collapse; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 24px 0; border: 1px solid #e1e4e8; color: #24292e;">
@@ -63,23 +66,23 @@ Platform Measurement follows a chained trust-transfer model. During hardware ini
     <tbody>
       <tr>
         <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;"><strong>BSBC</strong> (BootROM Secure Boot Code)</td>
-        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">Secure boot code embedded in the on-chip ROM</td>
+        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">内置于芯片内 ROM 的安全启动代码</td>
       </tr>
       <tr>
         <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;"><strong>ESBC</strong> (External Secure Boot Code)</td>
-        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">Secure boot code stored in off-chip non-volatile memory</td>
+        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">存储在芯片外非易失性存储的安全启动代码</td>
       </tr>
       <tr>
         <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;"><strong>InSE</strong> (Integrated Secure Element)</td>
-        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">An on-chip secure subsystem with physical-security protection</td>
+        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">芯片内置的安全子系统，具备物理安全防护能力</td>
       </tr>
       <tr>
         <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;"><strong>HSM</strong> (Hardware Security Module)</td>
-        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">High-security firmware running on InSE; provides key management, secure storage, and Platform-token generation</td>
+        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">运行在 InSE 上的高安固件，提供密钥管理、安全存储和 Platform token 生成等功能</td>
       </tr>
       <tr>
         <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;"><strong>IMU</strong> (Intelligence Management Unit)</td>
-        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">Intelligent management unit responsible for hardware management, monitoring, and secure boot</td>
+        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">智能管理单元，用于硬件管理、监控和安全启动</td>
       </tr>
       <tr>
         <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;"><strong>IPU</strong></td>
@@ -87,15 +90,15 @@ Platform Measurement follows a chained trust-transfer model. During hardware ini
       </tr>
       <tr>
         <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;"><strong>ATF</strong> (Arm Trusted Firmware)</td>
-        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">Low-level secure firmware running at the highest exception level (EL3)</td>
+        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">运行在最高特权级 (EL3) 的底层安全固件</td>
       </tr>
       <tr>
         <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;"><strong>TMM</strong> (TrustZone Management Monitor)</td>
-        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">A lightweight secure-monitoring component responsible for the CVM lifecycle, memory isolation, and interface dispatch</td>
+        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">轻量安全监控组件，负责 CVM 的生命周期、内存隔离和接口调用</td>
       </tr>
       <tr>
         <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;"><strong>UEFI</strong> (Unified Extensible Firmware Interface)</td>
-        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">Platform boot firmware that initializes hardware, performs security checks, and boots the system</td>
+        <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;">平台启动固件，负责初始化硬件、执行安全校验并引导系统</td>
       </tr>
       <tr>
         <td style="padding: 12px 16px; border: 1px solid #e1e4e8; font-size: 14px;"><strong>IMF AP</strong></td>
@@ -105,28 +108,28 @@ Platform Measurement follows a chained trust-transfer model. During hardware ini
   </table>
 </div>
 
-💡 RoTs are components that must be trusted because their misbehavior cannot be detected: (1) the Root of Trust for Measurement (RTM) measures software and forwards the results to the RTS; (2) the Root of Trust for Storage is access-controlled, tamper-resistant storage; (3) the Root of Trust for Reporting reports the RTS's contents — measurement values — as an attestation report; (4) the CRTM is the first code executed after reset and anchors the chain of trust.
+💡 RoTs 是必须被信任的系统组件，因为无法检测它的非预期行为：（1）度量信任根（RTM）计算软件的度量值，并将度量值发送给 RTS；（2）存储信任根是具备访问控制且防篡改的安全存储；（3）报告信任根上报 RTS 的记录内容，e.g., 度量值，呈现形式是证明报告；（4）CRTM 是系统复位后执行的初始代码，构成信任链的起点。
 
 ### CVM Measurement
 
-virtCCA supports two CVM boot methods (Figure 3): Direct Kernel Boot and Virtual Firmware Boot.
+针对不同的业务场景，virtCCA 为 CVM 提供了两类启动方式：直接内核启动（Direct Kernel Boot）和虚拟固件启动（Virtual Firmware Boot），如图 3 所示。
 
-- Direct Kernel Boot: the Hypervisor (QEMU/KVM) loads the OS kernel and the initial RAM filesystem (initramfs) directly, bypassing the virtual firmware and bootloader.
-- Virtual Firmware Boot: virtual firmware (UEFI) initializes hardware and loads a bootloader such as GRUB, which then loads the kernel and initramfs. We call this UEFI Boot in the rest of the article.
+- 直接内核启动：由 Hypervisor（QEMU/KVM）直接加载操作系统内核（kernel）和初始内存文件系统（initramfs），跳过虚拟固件和启动引导程序。
+- 虚拟固件启动：通过虚拟固件（UEFI）初始化硬件，加载启动引导程序（bootloader）如 GRUB，再由 bootloader 加载 kernel 和 initramfs，后文统称为 UEFI 启动。
 
-Direct Kernel Boot starts fast with a small resource footprint, a good fit for lightweight container environments (e.g., Kata Container). UEFI Boot works with existing OS images, handles complex boot configurations such as multi-kernel and multi-boot management, and preserves the cloud-management experience of a regular VM — a good fit for general-purpose VMs (e.g., IaaS cloud instances).
+直接内核启动的优势是启动速度快、资源占用小，适用于轻量化容器环境（如 Kata Container）。UEFI 启动的优势是兼容现有 OS 镜像，支持多内核、多引导管理等复杂启动项，能保持与普通虚拟机一致的云管服务，适用于通用型虚拟机（如 IaaS 云实例）。
 
 {% include figure.liquid path="assets/img/2026-01-21-virtcca-measured-boot-attestation/direct-kernel-and-firmware-boot.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 <div class="caption">
-    Figure 3. Direct Kernel Boot and Firmware Boot
+    Figure 3. Direct Kernel Boot and Firmware Boot
 </div>
 
-Both paths follow the same security primitive: Host-provided assets are untrusted. Any input from the Hypervisor (code, data, configuration) must be measured by the TMM — or by an RTM it delegates to — before it is used. The measurements are then extended into specific TMM-protected registers. Per the [Realm Management Monitor specification](https://developer.arm.com/documentation/den0137/latest) (A7.1 Realm measurements), these are the RIM (Realm Initial Measurement) and the REM (Realm Event Measurement). The TMM computes the RIM directly, capturing the initial register and memory state; subsequent RTMs compute the REM — for example, UEFI measuring the GRUB image it loads.
+尽管引导路径各异，其底层均遵循统一的安全原语：Host-provided assets are untrusted。任何源自 Hypervisor 侧的输入（包括代码、数据及配置）在被执行或使用前，必须由 TMM 或其委托的 RTM 完成强制性度量。这些度量结果最终被扩展至受 TMM 保护的特定寄存器中。参考 [Realm Management Monitor specification](https://developer.arm.com/documentation/den0137/latest)（A7.1 Realm measurements）的定义，上述寄存器包括 RIM（Realm Initial Measurement）和 REM（Realm Event Measurement），其中 RIM 由 TMM 直接计算，记录初始的寄存器和内存状态，而 REM 则由后续 RTM 计算，例如 UEFI 度量加载的 GRUB。
 
 #### Direct Kernel Boot
 
-When a CVM boots via Direct Kernel Boot, virtCCA's measurement logic follows the Arm CCA RMM specification. Since virtCCA's TMM is closed-source, this section uses RMM terminology. The table below summarizes the three phases; for details, see B4.3.9.4 RMI_REALM_CREATE initialization of RIM, B4.3.12.4 RMI_REC_CREATE extension of RIM, and B4.3.1.4 RMI_DATA_CREATE extension of RIM in the [Realm Management Monitor specification](https://developer.arm.com/documentation/den0137/latest).
+采用直接内核启动拉起 CVM 时，virtCCA 的度量逻辑遵循 Arm CCA 的 RMM 规范，由于 virtCCA 的 TMM 是闭源代码，本节将沿用 RMM 语义描述度量流程，下表给出了度量流程的三个阶段，细节可以参考 [Realm Management Monitor specification](https://developer.arm.com/documentation/den0137/latest) 的 B4.3.9.4 RMI_REALM_CREATE initialization of RIM、B4.3.12.4 RMI_REC_CREATE extension of RIM 和 B4.3.1.4 RMI_DATA_CREATE extension of RIM。
 
 <div style="overflow-x: auto;">
   <table style="width: 100%; border-collapse: collapse; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 24px 0; border: 1px solid #e1e4e8; color: #24292e;">
@@ -189,27 +192,27 @@ When a CVM boots via Direct Kernel Boot, virtCCA's measurement logic follows the
 
 #### Virtual Firmware Boot
 
-For UEFI-firmware-booted CVMs, the Arm CCA measurement specification did not yet exist at the time, so virtCCA developed its own solution ahead of the standard. Unlike the fixed flow of Direct Kernel Boot, the UEFI boot chain uses diverse boot media and dynamic configuration, making its path highly non-deterministic. Drawing on the trusted-boot mechanisms of TCG and TDX, virtCCA built a deterministic, measurable, and auditable boot pipeline.
+针对基于 UEFI 固件启动的 CVM 场景，鉴于彼时 Arm CCA 的度量规范仍尚未定义，virtCCA 提前进行了技术预研与方案落地。不同于流程相对固定的直接内核启动，UEFI 启动链条涉及多样的启动介质与动态配置，其路径表现出较强的非确定性。virtCCA 参考了 TCG 与 TDX 的可信启动机制，构建了一套可确定、可度量、可审计的引导链路。
 
-🍵 For technical details on Intel TDX's Trusted Boot, see this companion article: [Intel TDX: Measured Boot and Attestation in Grub Boot](https://mahaocheng.me/blog/2025/tdx-measure-boot/).
+🍵 关于 Intel TDX 的 Trusted Boot 技术细节，可参阅另外一篇文章 [Intel TDX: Measured Boot and Attestation in Grub Boot](https://mahaocheng.me/blog/2025/tdx-measure-boot/)。
 
 {% include figure.liquid path="assets/img/2026-01-21-virtcca-measured-boot-attestation/uefi-measured-boot.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 <div class="caption">
-    Figure 4. Measurement in UEFI Boot
+    Figure 4. Measurement in UEFI Boot
 </div>
 
-As Figure 4 shows, although the UEFI boot combinations are many, the factors that affect the system's security state are relatively fixed. virtCCA measures every security-sensitive element — boot variables, image files, and boot order — uniformly, and builds a reproducible, verifiable Event Log that covers any UEFI boot combination.
+如图 4 所示，尽管 UEFI 的启动组合路径繁杂，但影响系统安全状态的关键因素相对固定。virtCCA 将启动变量、镜像文件以及启动顺序等所有安全敏感状态进行统一度量，通过构建可复现、可验证的事件日志（Event Log），来覆盖任意的 UEFI 启动组合。
 
-Concretely, in the pre-kernel-load environment (spanning the UEFI and bootloader stages), all critical state is measured through EFI_CC_MEASUREMENT_PROTOCOL and extended into REM. The protocol also records each measurement into the CCEL (Confidential Computing Event Log) within the ACPI tables. A CVM can then verify REM by replaying the log, auditing the entire chain of trust end-to-end.
+具体而言，在内核载入前的预启动环境中（跨越 UEFI 与 bootloader 阶段），所有关键状态均通过 EFI_CC_MEASUREMENT_PROTOCOL 进行度量，并扩展到 REM 中。同时，该协议将每次度量操作记录至 ACPI 表中的 CCEL（Confidential Computing Event Log）。这种设计支持 CVM 通过日志重放机制验证 REM 的真实性，从而确保了整条信任链的端到端可审计。
 
 {% include figure.liquid path="assets/img/2026-01-21-virtcca-measured-boot-attestation/measured-boot-components-edk2.png" class="img-fluid rounded z-depth-0 mx-auto d-block" width="80%" zoomable=true %}
 
 <div class="caption">
-    Figure 5. Measured Boot Components in EDK2
+    Figure 5. Measured Boot Components in EDK2
 </div>
 
-Figure 5 shows virtCCA's measurement components in UEFI firmware. EFI_CC_MEASUREMENT_PROTOCOL wraps the low-level measurement logic for confidential-computing environments. Per the [UEFI Specification 2.10](https://uefi.org/specs/UEFI/2.10/38_Confidential_Computing.html), it provides hash computation and event-log APIs, and defines the semantic mapping from traditional TPM PCRs to virtCCA REMs (table below). The CcaTcg2Dxe.c driver handles measurement during the DXE phase; the DxeTpm2MeasureBootLib library handles integrity measurement of PE images and the GPT partition table. Source: [src-openeuler/edk2](https://atomgit.com/src-openeuler/edk2/blob/openEuler-24.03-LTS-SP2/edk2.spec), patches 97–106 ("Support measurement when UEFI Boot CVM"). For the flow, see the Measured Boot Flow section of [Intel TDX: Measured Boot and Attestation in Grub Boot](https://mahaocheng.me/blog/2025/tdx-measure-boot/).
+virtCCA 在 UEFI 固件中的度量组件如图 5 所示。其中，EFI_CC_MEASUREMENT_PROTOCOL 封装了机密计算环境下的底层度量逻辑。遵循 [UEFI Specification 2.10](https://uefi.org/specs/UEFI/2.10/38_Confidential_Computing.html) 规范，该实例提供哈希计算和事件日志的能力，并确立了从传统的 TPM PCR 到 virtCCA REM 的语义映射（见下表）。CcaTcg2Dxe.c 驱动负责处理 DXE 阶段的度量事务，DxeTpm2MeasureBootLib 库则负责 PE 镜像及 GPT 分区表的完整性度量，代码可参阅 [src-openeuler/edk2](https://atomgit.com/src-openeuler/edk2/blob/openEuler-24.03-LTS-SP2/edk2.spec) 的 patch97-patch106（Support measurement when UEFI Boot CVM），流程可参考 [Intel TDX: Measured Boot and Attestation in Grub Boot](https://mahaocheng.me/blog/2025/tdx-measure-boot/) 的 Measured Boot Flow 章节。
 
 <div style="overflow-x: auto;">
   <table style="width: 100%; border-collapse: collapse; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 24px 0; border: 1px solid #e1e4e8; color: #24292e;">
@@ -258,29 +261,29 @@ Figure 5 shows virtCCA's measurement components in UEFI firmware. EFI_CC_MEASURE
 
 ## Attestation
 
-Under the Delegated Attestation model, several parties share the work of producing the attestation report. As Figure 2 shows, the virtCCA Token wraps two Sub-Tokens: the CVM Token and the Platform Token. The HSM in InSE generates the Platform Token; the TMM caches it in secure memory for performance. The TMM then generates the CVM Token and combines both into the virtCCA Token.
+在 Delegated Attestation 模型下，证明报告的生成职责由多个参与方协同承担。如图 2 所示，virtCCA Token 封装了两个 Sub-Token（CVM Token 与 Platform Token）。其中，Platform Token 由 InSE 的 HSM 生成，出于性能考虑会缓存到 TMM 的安全内存；TMM 则在生成 CVM Token 基础上组合两者生成 virtCCA Token。
 
 ### Authenticity
 
-Each generating entity signs its Sub-Token with a dedicated key, making the chain of trust traceable. The keys derive in a chain: the entity that produced the predecessor Sub-Token derives the next key. To block Sub-Token substitution attacks, Sub-Tokens are cryptographically bound through a "hash anchoring" mechanism — the predecessor Sub-Token's Challenge embeds the hash of the successor Sub-Token's public key.
+为了确保信任链的可追溯性，每个 Sub-Token 均由对应生成实体使用专用密钥进行签名。这些密钥遵循链式派生逻辑：链中的每个密钥都由其前序 Sub-Token 的生成实体派生。为防止 Sub-Token 替换攻击，各个 Sub-Token 通过“哈希锚定”机制实现密码学绑定，在前序 Sub-Token 的 Challenge 中嵌入后序 Sub-Token 的公钥哈希。
 
-In virtCCA's key hierarchy: CPAK signs the Platform Token, derived by the HSM from a root key and platform parameters; its public-key certificate is issued by the Huawei Root CA and Sub CA, giving a hardware-rooted identity proof. RAK signs the CVM Token, derived during TMM initialization by the HSM from the root key, the virtCCA platform measurement, and other parameters.
+具体到 virtCCA 的密钥体系，CPAK 是 Platform Token 的签名密钥，由 HSM 基于根密钥及平台参数派生，其公钥证书由 Huawei Root CA 及 Sub CA 签发背书，提供了硬件级身份证明；RAK 是 CVM Token 的签名密钥，派生于 TMM 初始化阶段，由 HSM 结合根密钥和 virtCCA 平台度量值等参数生成。
 
-🍵 Since the virtCCA TMM is a closed-source component, the details of how it interacts with the HSM to obtain the RAK and the Platform Token can be found in the [Delegated Attestation Service Integration Guide](https://trustedfirmware-m.readthedocs.io/projects/tf-m-extras/en/latest/partitions/delegated_attestation/delegated_attest_integration_guide.html).
+🍵 鉴于 virtCCA TMM 属于闭源组件，关于其与 HSM 交互以获取 RAK 和 Platform Token 的流程细节，可参阅 [Delegated Attestation Service Integration Guide](https://trustedfirmware-m.readthedocs.io/projects/tf-m-extras/en/latest/partitions/delegated_attestation/delegated_attest_integration_guide.html)。
 
 ### Attestation Flow
 
-The [virtCCA SDK](https://gitcode.com/openeuler/virtCCA_sdk) is a user-space toolkit for enabling and integrating remote attestation (Figure 6). Its companion [Attestation Demo](https://gitcode.com/openeuler/virtCCA_sdk/tree/master/attestation/samples) shows the end-to-end flow: the Server runs inside the CVM and exposes the device certificate (CPAK) and the attestation report (virtCCA Token) through the TSI interface. The Client acts as a Local Verifier, parsing the certificate and report, validating the certificate chain, and evaluating the security policy.
+virtCCA 提供了用户态工具包 [virtCCA SDK](https://gitcode.com/openeuler/virtCCA_sdk)，用于简化远程证明的使能和集成，如图 6 所示。其配套的 [Attestation Demo](https://gitcode.com/openeuler/virtCCA_sdk/tree/master/attestation/samples) 展示了端到端的证明逻辑：Server 端在 CVM 运行时环境里，利用 TSI 接口向上透传设备证书（CPAK 证书）与证明报告（virtCCA Token）。Client 端则充当 Local Verifier 角色，解析收到的证书与报告，进行证书链校验和安全策略评估。
 
 {% include figure.liquid path="assets/img/2026-01-21-virtcca-measured-boot-attestation/virtcca-sdk-components.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 
 <div class="caption">
-    Figure 6. Component Details in virtCCA SDK
+    Figure 6. Component Details in virtCCA SDK
 </div>
 
-🍵 For other features — for example Full Disk Encryption, see [attestation/full-disk-encryption](https://gitcode.com/openeuler/virtCCA_sdk/tree/master/attestation/full-disk-encryption); for virtCCA's adaptation of [RATS-TLS](https://github.com/inclavare-containers/rats-tls), see [attestation/rats-tls](https://gitcode.com/openeuler/virtCCA_sdk/tree/master/attestation/rats-tls).
+🍵 其他特性，例如 Full Disk Encryption 可参阅 [attestation/full-disk-encryption](https://gitcode.com/openeuler/virtCCA_sdk/tree/master/attestation/full-disk-encryption)；virtCCA 对 [RATS-TLS](https://github.com/inclavare-containers/rats-tls) 的适配可参阅 [attestation/rats-tls](https://gitcode.com/openeuler/virtCCA_sdk/tree/master/attestation/rats-tls)。
 
-The diagram below shows the Attestation Demo flow. For real-world deployment and usage, see the feature guide [Enabling Remote Attestation](https://www.hikunpeng.com/document/detail/zh/kunpengcctrustzone/tee/cVMcont/kunpengtee_16_0036.html).
+如下展示了 Attestation Demo 的具体流程，实际部署与使用请参阅 [使能远程证明](https://www.hikunpeng.com/document/detail/zh/kunpengcctrustzone/tee/cVMcont/kunpengtee_16_0036.html) 的特性指南。
 
 <div id="mermaid-target"></div>
 
@@ -342,14 +345,14 @@ sequenceDiagram
     mermaid.render('graph-id-1', graphConfig).then(({ svg }) => {
         element.innerHTML = svg;
     }).catch(err => {
-        console.error("Mermaid rendering failed:", err);
-        element.innerHTML = "<p style='color:red;'>Mermaid diagram failed to render — please check the console.</p>";
+        console.error("Mermaid 渲染失败:", err);
+        element.innerHTML = "<p style='color:red;'>Mermaid 图表渲染失败，请检查控制台报错。</p>";
     });
 });
 </script>
 
 ## Summary
 
-Measured boot and remote attestation make for a great "visible trust" story, and everyone loves telling it. For engineers, though, the work really does span the stack — grinding from chip, firmware, and OS up through applications and infrastructure, with one eye on the standards and ecosystem the whole time. After all that, it can be hard to point at exactly where the value lands, and honestly the tech itself isn't all that flashy, 🥲😅.
+度量启动和远程证明这玩意儿，大家一直聊得挺热闹，谁都想讲好“看得见的信任”这个故事。但对技术人来说，确实是全方位的折腾：从最底下的芯片、固件、OS 一路磨到应用和基建，中间还得兼顾标准和生态。等真的忙活完一通，有时也说不清价值到底体现在哪，说到底技术本身也没多炫酷，🥲😅。
 
-Anyway, virtCCA has done some of this work, with plenty still to improve. Keep at it, CCA folks.
+总之，virtCCA 目前在这块做了一些工作，还有很多不完善的地方，大家 CCA 加油吧。
