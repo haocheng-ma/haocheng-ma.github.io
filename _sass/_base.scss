@@ -17,11 +17,13 @@ li,
 span,
 strong {
   color: var(--global-text-color);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Noto Sans SC", "Noto Sans",
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
   font-weight: normal;
 }
 
 p {
+  font-size: 1.0625rem;
   font-weight: normal;
   line-height: 1.8;
 }
@@ -220,7 +222,7 @@ ul.task-list input[type="checkbox"] {
   .more-info {
     margin-bottom: 5px;
     margin-top: 5px;
-    font-family: monospace;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 
     p {
       display: inline-block;
@@ -1324,4 +1326,39 @@ ninja-keys::part(ninja-input-wrapper) {
 ::highlight(search) {
   background-color: var(--global-theme-color);
   color: var(--global-text-color);
+}
+
+.post-content {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+
+  h2 {
+    margin-top: 2.5em;
+    line-height: 1.25;
+  }
+
+  h3 {
+    margin-top: 2em;
+    line-height: 1.25;
+  }
+
+  p {
+    margin-bottom: 1.25em;
+  }
+
+  a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+
+  a:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  .full-width {
+    max-width: none;
+    width: 100%;
+  }
 }
