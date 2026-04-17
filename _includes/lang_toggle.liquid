@@ -22,14 +22,17 @@
 {%- endfor -%}
 
 {%- if sibling_post -%}
-  <div class="post-lang-toggle" role="group" aria-label="Language">
-    <i class="fa-solid fa-language" aria-hidden="true"></i>
+  &nbsp;&middot;&nbsp;
+  <span class="post-lang" role="group" aria-label="Language">
+    <i class="fa-solid fa-language fa-sm" aria-hidden="true"></i>
     {%- if current_lang == 'en' -%}
-      <span class="active" aria-current="true">EN</span>
+      <strong aria-current="true">EN</strong>
+      <span class="sep">/</span>
       <a href="{{ sibling_post.url | relative_url }}" hreflang="zh">中文</a>
     {%- else -%}
       <a href="{{ sibling_post.url | relative_url }}" hreflang="en">EN</a>
-      <span class="active" aria-current="true">中文</span>
+      <span class="sep">/</span>
+      <strong aria-current="true">中文</strong>
     {%- endif -%}
-  </div>
+  </span>
 {%- endif -%}

@@ -1432,58 +1432,30 @@ nav[data-toggle="toc"] {
 }
 
 .post-header {
-  .post-tags-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-
-    .post-tags {
-      margin-bottom: 0;
-      flex: 1 1 auto;
-      min-width: 0;
-    }
-  }
-
-  .post-lang-toggle {
-    flex: 0 0 auto;
-    display: inline-flex;
-    align-items: center;
-    font-size: 0.8rem;
-    border: 1px solid var(--global-divider-color);
-    border-radius: 999px;
-    line-height: 1;
-    overflow: hidden;
+  .post-lang {
+    white-space: nowrap;
 
     i.fa-language {
+      margin-right: 0.2rem;
+    }
+
+    .sep {
+      margin: 0 0.2rem;
       color: var(--global-text-color-light);
-      padding: 0 0.4rem 0 0.7rem;
-      font-size: 0.9rem;
     }
 
-    .active,
-    a {
-      padding: 0.3rem 0.7rem;
-      display: inline-flex;
-      align-items: center;
-      line-height: 1;
-      text-decoration: none;
-    }
-
-    .active {
+    strong {
       color: var(--global-theme-color);
       font-weight: 600;
     }
 
     a {
       color: var(--global-text-color-light);
-      transition: color 0.15s ease;
+      text-decoration: none;
 
       &:hover,
       &:focus {
         color: var(--global-theme-color);
-        text-decoration: none;
       }
     }
   }
