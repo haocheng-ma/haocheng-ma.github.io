@@ -22,13 +22,14 @@
 {%- endfor -%}
 
 {%- if sibling_post -%}
-  <p class="post-lang-toggle">
+  <div class="post-lang-toggle" role="group" aria-label="Language">
+    <i class="fa-solid fa-language" aria-hidden="true"></i>
     {%- if current_lang == 'en' -%}
-      <strong>EN</strong> &nbsp;|&nbsp;
+      <span class="active" aria-current="true">EN</span>
       <a href="{{ sibling_post.url | relative_url }}" hreflang="zh">中文</a>
     {%- else -%}
       <a href="{{ sibling_post.url | relative_url }}" hreflang="en">EN</a>
-      &nbsp;|&nbsp; <strong>中文</strong>
+      <span class="active" aria-current="true">中文</span>
     {%- endif -%}
-  </p>
+  </div>
 {%- endif -%}

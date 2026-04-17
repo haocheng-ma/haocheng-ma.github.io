@@ -1432,22 +1432,64 @@ nav[data-toggle="toc"] {
 }
 
 .post-header {
-  .post-lang-toggle {
-    font-size: 0.875rem;
-    color: var(--global-text-color-light);
-    margin-top: 0.5rem;
-    margin-bottom: 0;
+  .post-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
 
-    strong {
-      color: var(--global-text-color);
+    .post-title {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin-bottom: 0;
+    }
+  }
+
+  .post-lang-toggle {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    font-size: 0.95rem;
+    border: 1px solid var(--global-divider-color);
+    border-radius: 999px;
+    background: var(--global-code-bg-color);
+    overflow: hidden;
+    margin-top: 0.5rem;
+    line-height: 1;
+
+    i.fa-language {
+      color: var(--global-text-color-light);
+      padding: 0 0.5rem 0 0.85rem;
+      font-size: 1.1rem;
+    }
+
+    .active,
+    a {
+      padding: 0.45rem 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      line-height: 1;
+    }
+
+    .active {
+      background: var(--global-theme-color);
+      color: var(--global-hover-text-color);
+      font-weight: 600;
     }
 
     a {
-      color: var(--global-text-color-light);
-      text-decoration: none;
+      color: var(--global-text-color);
+      font-weight: 500;
+      transition: background-color 0.15s ease;
 
-      &:hover {
+      &:hover,
+      &:focus {
+        background: var(--global-divider-color);
         color: var(--global-theme-color);
+        text-decoration: none;
       }
     }
   }
