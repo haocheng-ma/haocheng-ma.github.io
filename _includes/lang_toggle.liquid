@@ -1,0 +1,34 @@
+{%- comment -%}
+  Renders an EN | 中文 language toggle in the post header.
+  Pairing convention: the English (default) post lives at its normal permalink;
+  the Chinese sibling has `lang: zh` and a permalink that is the English one
+  with `/zh/` appended (e.g. /blog/2026/foo/ and /blog/2026/foo/zh/).
+{%- endcomment -%}
+
+{%- assign current_lang = page.lang | default: 'en' -%}
+
+{%- if current_lang == 'zh' -%}
+  {%- assign sibling_url = page.url | remove_first: 'zh/' -%}
+{%- else -%}
+  {%- assign sibling_url = page.url | append: 'zh/' -%}
+{%- endif -%}
+
+{%- assign sibling_post = null -%}
+{%- for p in site.posts -%}
+  {%- if p.url == sibling_url -%}
+    {%- assign sibling_post = p -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if sibling_post -%}
+  <p class="post-lang-toggle">
+    {%- if current_lang == 'en' -%}
+      <strong>EN</strong> &nbsp;|&nbsp;
+      <a href="{{ sibling_post.url | relative_url }}" hreflang="zh">中文</a>
+    {%- else -%}
+      <a href="{{ sibling_post.url | relative_url }}" hreflang="en">EN</a>
+      &nbsp;|&nbsp; <strong>中文</strong>
+    {%- endif -%}
+  </p>
+{%- endif -%}
