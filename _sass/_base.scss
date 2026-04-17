@@ -1432,17 +1432,17 @@ nav[data-toggle="toc"] {
 }
 
 .post-header {
-  .post-header-top {
+  .post-tags-row {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
 
-    .post-title {
+    .post-tags {
+      margin-bottom: 0;
       flex: 1 1 auto;
       min-width: 0;
-      margin-bottom: 0;
     }
   }
 
@@ -1450,44 +1450,38 @@ nav[data-toggle="toc"] {
     flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
-    gap: 0;
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     border: 1px solid var(--global-divider-color);
     border-radius: 999px;
-    background: var(--global-code-bg-color);
-    overflow: hidden;
-    margin-top: 0.5rem;
     line-height: 1;
+    overflow: hidden;
 
     i.fa-language {
       color: var(--global-text-color-light);
-      padding: 0 0.5rem 0 0.85rem;
-      font-size: 1.1rem;
+      padding: 0 0.4rem 0 0.7rem;
+      font-size: 0.9rem;
     }
 
     .active,
     a {
-      padding: 0.45rem 0.95rem;
+      padding: 0.3rem 0.7rem;
       display: inline-flex;
       align-items: center;
-      text-decoration: none;
       line-height: 1;
+      text-decoration: none;
     }
 
     .active {
-      background: var(--global-theme-color);
-      color: var(--global-hover-text-color);
+      color: var(--global-theme-color);
       font-weight: 600;
     }
 
     a {
-      color: var(--global-text-color);
-      font-weight: 500;
-      transition: background-color 0.15s ease;
+      color: var(--global-text-color-light);
+      transition: color 0.15s ease;
 
       &:hover,
       &:focus {
-        background: var(--global-divider-color);
         color: var(--global-theme-color);
         text-decoration: none;
       }
