@@ -1367,3 +1367,66 @@ ninja-keys::part(ninja-input-wrapper) {
     width: 100%;
   }
 }
+
+// Bootstrap-toc sidebar overrides — theme-aware, matches al-folio aesthetic.
+// Originals (bootstrap-toc.min.css) hardcode purple #563d7c and grey #767676.
+#toc-sidebar {
+  top: 6rem;
+  max-height: calc(100vh - 8rem);
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  font-size: 0.85rem;
+}
+
+nav[data-toggle="toc"] {
+  .nav > li > a {
+    color: var(--global-text-color-light);
+    font-weight: 400;
+    padding: 4px 16px;
+    line-height: 1.4;
+    border-left: 1px solid transparent;
+
+    &:hover,
+    &:focus {
+      color: var(--global-theme-color);
+      padding-left: 15px;
+      background-color: transparent;
+      border-left: 1px solid var(--global-divider-color);
+    }
+  }
+
+  .nav-link.active,
+  .nav-link.active:focus,
+  .nav-link.active:hover {
+    color: var(--global-theme-color);
+    font-weight: 600;
+    padding-left: 14px;
+    background-color: transparent;
+    border-left: 2px solid var(--global-theme-color);
+  }
+
+  .nav .nav > li > a {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 28px;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--global-text-color-light);
+
+    &:hover,
+    &:focus {
+      padding-left: 27px;
+      color: var(--global-theme-color);
+      border-left: 1px solid var(--global-divider-color);
+    }
+  }
+
+  .nav .nav > li > .active,
+  .nav .nav > li > .active:focus,
+  .nav .nav > li > .active:hover {
+    padding-left: 26px;
+    font-weight: 500;
+    color: var(--global-theme-color);
+    border-left: 2px solid var(--global-theme-color);
+  }
+}
