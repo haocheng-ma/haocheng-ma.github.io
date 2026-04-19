@@ -7,13 +7,10 @@ tags: security
 categories: virtcca
 # giscus_comments: true
 # related_posts: true
-toc:
-  sidebar: left
+toc: true
 ---
 
 💭 A quick note: virtCCA's measured-boot and remote-attestation features landed in stages as the product was commercialized, scattering the code across components and fragmenting the documentation. This article consolidates the framework at the architectural level, so readers don't have to dig through scattered older sources.
-
----
 
 ## Introduction
 

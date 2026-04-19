@@ -5,10 +5,12 @@ date: 2025-07-24
 description: TPMs are ridiculously complex.
 tags: security
 categories: tpm
+lang: zh
+hidden: true
+permalink: /blog/2025/tpm-based-security/zh/
 # giscus_comments: true
 # related_posts: true
-toc:
-  sidebar: left
+toc: true
 ---
 
 TPM（可信平台模块）本质上并不会直接存储完整的密钥，而是持久化存储称为 Seed（种子）的秘密值，并通过这些 Seed 确定性地派生出各种密钥。两类常见的 Seed 和对应的密钥体系是 Endorsement 和 Stroage，如下所示：

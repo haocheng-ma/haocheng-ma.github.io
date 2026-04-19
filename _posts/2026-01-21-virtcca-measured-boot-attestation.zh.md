@@ -10,13 +10,10 @@ hidden: true
 permalink: /blog/2026/virtcca-measured-boot-attestation/zh/
 # giscus_comments: true
 # related_posts: true
-toc:
-  sidebar: left
+toc: true
 ---
 
 💭 碎碎念：关于 virtCCA 的度量启动和远程证明，其特性随商业化进程分阶段落地，导致相关代码散落在各个组件中，文档也比较碎片化。趁此机会，本文将从架构层面进行统一的梳理与分析，希望能帮大家理清脉络，省去翻阅零散旧资料的周折。
-
----
 
 ## Introduction
 

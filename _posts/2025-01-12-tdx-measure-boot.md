@@ -7,8 +7,7 @@ tags: security
 categories: tdx
 # giscus_comments: true
 # related_posts: true
-toc:
-  sidebar: left
+toc: true
 ---
 
 Intel Trust Domain Extension (TDX) allows people to deploy hardware-isolated virtual machines (VMs) called trust domains (TDs). A TD VM is isolated from the virtual machine manager (VMM), hypervisor, and other non-TD software on the host platform. The entire memory contents of a TD is encrypted using a multiple-key encryption method. Intel TDX excludes the host platform from the TD's trusted computing base (TCB).
