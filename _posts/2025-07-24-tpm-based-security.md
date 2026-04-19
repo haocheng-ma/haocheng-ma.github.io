@@ -12,10 +12,10 @@ toc: true
 
 A TPM (Trusted Platform Module) does not store full keys directly. Instead, it persists secret values called Seeds and derives keys from them deterministically. Two common seed types drive two key hierarchies: Endorsement and Storage.
 
-| Seed type        | Key hierarchy           | Purpose                          |
-| ---------------- | ----------------------- | -------------------------------- |
-| Endorsement Seed | Endorsement Key (EK)    | Identifies the TPM               |
-| Storage Seed     | Storage Root Key (SRK)  | Protects keys for local apps     |
+| Seed type        | Key hierarchy          | Purpose                      |
+| ---------------- | ---------------------- | ---------------------------- |
+| Endorsement Seed | Endorsement Key (EK)   | Identifies the TPM           |
+| Storage Seed     | Storage Root Key (SRK) | Protects keys for local apps |
 
 {% include figure.liquid path="assets/img/2025-07-24-tpm-based-security/key_management.png" class="img-fluid rounded z-depth-0 mx-auto d-block" zoomable=true %}
 

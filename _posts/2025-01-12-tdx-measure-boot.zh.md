@@ -452,7 +452,7 @@ func newRtMrCmd() *cobra.Command {
 
 **Config-A**：
 
-- 将_基础_ TDVF 特性合入现有的 `OvmfX64Pkg.dsc`。（与既有 SEV 对齐）
+- 将*基础* TDVF 特性合入现有的 `OvmfX64Pkg.dsc`。（与既有 SEV 对齐）
 - 威胁模型：VMM 不排除在 TCB 之外。（不改变现状）
 - `OvmfX64Pkg.dsc` 包含 SEV/TDX/normal OVMF 的基本启动能力，最终二进制可在 SEV/TDX/normal OVMF 上运行。
 - 不修改 OvmfPkgX64 现有镜像布局。
@@ -474,7 +474,7 @@ build.sh -p OvmfPkg/OvmfPkgX64.dsc -a X64 -t GCC5
 
 **Config-B**：
 
-- 在 TDX 专用目录中新增独立的 `IntelTdx.dsc`，提供_完整_特性的 TDVF。（与既有 SEV 对齐）
+- 在 TDX 专用目录中新增独立的 `IntelTdx.dsc`，提供*完整*特性的 TDVF。（与既有 SEV 对齐）
 - 威胁模型：VMM 排除在 TCB 之外。（需要必要改动以防御来自 VMM 的攻击）
 - `IntelTdx.dsc` 包含 TDX/normal OVMF 的基本启动能力，最终二进制可在 TDX/normal OVMF 上运行。
 - 将来可能与 AmdSev.dsc 合并，但目前不合并；具体时间未知。只有 Intel 与 AMD 双方都认为各自方案足够成熟时，才会在社区中协调合并。
