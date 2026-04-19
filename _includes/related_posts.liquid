@@ -7,11 +7,11 @@
   <p class="mb-2">Here are some more articles you might like to read next:</p>
   <ul>
     {% for post in related_candidates limit: site.related_blog_posts.max_related %}
-      <li><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></li>
+      <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
     {% endfor %}
   </ul>
-{% endif %}
-{% if site.newsletter.enabled and site.footer_fixed %}
-  <p class="mb-2" style="margin-top: 1.5rem">Subscribe to be notified of future articles:</p>
-  {% include scripts/newsletter.liquid left=true %}
+  {% if site.newsletter.enabled and site.footer_fixed %}
+    <p class="mb-2" style="margin-top: 1.5rem">Subscribe to be notified of future articles:</p>
+    {% include scripts/newsletter.liquid left=true %}
+  {% endif %}
 {% endif %}
