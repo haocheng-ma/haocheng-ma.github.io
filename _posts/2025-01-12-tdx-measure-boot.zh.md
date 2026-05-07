@@ -4,7 +4,6 @@ title: "Intel TDX: Measured Boot and Attestation in Grub Boot"
 date: 2025-01-12
 description: 如何在使用 grub 启动 TD guest 时构建可信链。
 tags: security
-categories: tdx
 lang: zh
 hidden: true
 permalink: /blog/2025/tdx-measure-boot/zh/

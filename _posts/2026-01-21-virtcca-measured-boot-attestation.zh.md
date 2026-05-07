@@ -4,7 +4,6 @@ title: "virtCCA: Measured Boot and Attestation Demystified"
 date: 2026-01-21
 description: An exploration of the measurement and attestation framework within Huawei virtCCA.
 tags: security
-categories: virtcca
 lang: zh
 hidden: true
 permalink: /blog/2026/virtcca-measured-boot-attestation/zh/

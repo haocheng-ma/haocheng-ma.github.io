@@ -4,7 +4,6 @@ title: "Intel TDX: Measured Boot and Attestation in Grub Boot"
 date: 2025-01-12
 description: How to build a trusted chain when launch TD guest using grub boot.
 tags: security
-categories: tdx
 # giscus_comments: true
 # related_posts: true
 toc: true

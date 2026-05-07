@@ -4,7 +4,6 @@ title: Key Management in TPM based Security
 date: 2025-07-24
 description: TPMs are ridiculously complex.
 tags: security
-categories: tpm
 lang: zh
 hidden: true
 permalink: /blog/2025/tpm-based-security/zh/
