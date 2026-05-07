@@ -10,7 +10,8 @@ layout: default
   <article class="archive">
     <div class="table-responsive">
       <table class="table table-sm table-borderless">
-        {% for post in page.posts %}
+        {% assign posts = page.posts | where_exp: "post", "post.hidden != true" | where_exp: "post", "post.lang != 'zh'" %}
+        {% for post in posts %}
           <tr>
             <th scope="row">{{ post.date | date: '%b %d, %Y' }}</th>
             <td>
