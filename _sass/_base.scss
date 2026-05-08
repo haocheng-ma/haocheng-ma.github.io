@@ -471,11 +471,15 @@ ul.task-list input[type="checkbox"] {
 
 .social {
   text-align: center;
+  margin-top: 0.75rem;
 
   .contact-icons {
-    font-size: 4rem;
+    font-size: 1.5rem;
+    line-height: 1.6;
 
     a {
+      margin: 0 0.2rem;
+
       i::before {
         color: var(--global-text-color);
         transition-property: all 0.2s ease-in-out;
