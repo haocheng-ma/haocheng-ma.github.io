@@ -7,7 +7,7 @@ tags: security
 lang: zh
 hidden: true
 permalink: /blog/2025/tdx-measure-boot/zh/
-# giscus_comments: true
+giscus_comments: true
 # related_posts: true
 toc: true
 ---

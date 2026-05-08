@@ -7,7 +7,7 @@ tags: security
 lang: zh
 hidden: true
 permalink: /blog/2026/virtcca-measured-boot-attestation/zh/
-# giscus_comments: true
+giscus_comments: true
 # related_posts: true
 toc: true
 ---

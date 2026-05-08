@@ -4,7 +4,7 @@ title: Key Management in TPM based Security
 date: 2025-07-24
 description: TPMs are ridiculously complex.
 tags: security
-# giscus_comments: true
+giscus_comments: true
 # related_posts: true
 toc: true
 ---

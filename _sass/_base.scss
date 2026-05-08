@@ -1479,6 +1479,11 @@ ninja-keys::part(ninja-input-wrapper) {
   }
 }
 
+#giscus_thread {
+  max-width: 720px;
+  margin: 2rem auto 0;
+}
+
 .post-header {
   .post-lang {
     white-space: nowrap;
