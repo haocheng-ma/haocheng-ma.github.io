@@ -1,0 +1,35 @@
+{%- comment -%}
+  Emits <link rel="alternate" hreflang="..."> tags for translated posts.
+  Pairing convention (matches _includes/lang_toggle.liquid):
+    English post: /blog/YYYY/slug/    (default, page.lang unset → 'en')
+    Chinese sibling: /blog/YYYY/slug/zh/ (page.lang: zh)
+  When a sibling exists, emit en + zh-Hans + x-default alternates on both
+  versions, so search engines treat them as translations rather than
+  duplicates. When no sibling exists, emit nothing.
+{%- endcomment -%}
+
+{%- assign current_lang = page.lang | default: 'en' -%}
+
+{%- if current_lang == 'zh' -%}
+  {%- assign en_url = page.url | remove_first: 'zh/' -%}
+  {%- assign zh_url = page.url -%}
+  {%- assign sibling_url = en_url -%}
+{%- else -%}
+  {%- assign en_url = page.url -%}
+  {%- assign zh_url = page.url | append: 'zh/' -%}
+  {%- assign sibling_url = zh_url -%}
+{%- endif -%}
+
+{%- assign sibling_post = nil -%}
+{%- for p in site.posts -%}
+  {%- if p.url == sibling_url -%}
+    {%- assign sibling_post = p -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if sibling_post -%}
+  <link rel="alternate" hreflang="en" href="{{ en_url | absolute_url }}">
+  <link rel="alternate" hreflang="zh-Hans" href="{{ zh_url | absolute_url }}">
+  <link rel="alternate" hreflang="x-default" href="{{ en_url | absolute_url }}">
+{%- endif -%}
