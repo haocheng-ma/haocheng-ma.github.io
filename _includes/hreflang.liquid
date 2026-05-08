@@ -20,7 +20,7 @@
   {%- assign sibling_url = zh_url -%}
 {%- endif -%}
 
-{%- assign sibling_post = nil -%}
+{%- assign sibling_post = null -%}
 {%- for p in site.posts -%}
   {%- if p.url == sibling_url -%}
     {%- assign sibling_post = p -%}
