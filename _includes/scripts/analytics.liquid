@@ -30,3 +30,7 @@
     data-code="{{ site.pirsch_analytics }}"
   ></script>
 {% endif %}
+{% if site.enable_goatcounter_analytics and jekyll.environment == "production" %}
+  <!-- GoatCounter analytics — only fires in production builds so local dev doesn't pollute stats. -->
+  <script data-goatcounter="{{ site.goatcounter_endpoint }}" async src="//gc.zgo.at/count.js"></script>
+{% endif %}

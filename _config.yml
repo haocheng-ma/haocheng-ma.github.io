@@ -123,6 +123,7 @@ contact_note: >
 google_analytics: # your Google Analytics measurement ID (format: G-XXXXXXXXXX)
 cronitor_analytics: # cronitor RUM analytics site ID (format: XXXXXXXXX)
 pirsch_analytics: # your Pirsch analytics site ID (length 32 characters)
+goatcounter_endpoint: https://mahaocheng.goatcounter.com/count # GoatCounter "count" endpoint URL
 
 # For Google Search Console, see https://support.google.com/webmasters/answer/9008080?hl=en#meta_tag_verification&zippy=%2Chtml-tag
 google_site_verification: IZHz75ntcIC4eGlb8HT7ZmeXprRk-iWg8hQMbMEmd84 # your google-site-verification ID (Google Search Console)
@@ -418,6 +419,7 @@ lazy_loading_images: true # enables lazy loading of images (recommended)
 enable_google_analytics: false # enables google analytics
 enable_cronitor_analytics: false # enables cronitor RUM analytics
 enable_pirsch_analytics: false # enables Pirsch analytics (https://pirsch.io/)
+enable_goatcounter_analytics: true # enables GoatCounter analytics (https://www.goatcounter.com/)
 enable_google_verification: true # enables google site verification
 enable_bing_verification: false # enables bing site verification
 enable_masonry: true # enables automatic project cards arrangement
