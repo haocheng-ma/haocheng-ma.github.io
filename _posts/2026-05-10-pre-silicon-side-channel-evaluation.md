@@ -190,12 +190,12 @@ The third transition — EM to power, with the backbone shifting from GAN to dif
 
 Reading the steps together: speed, generality, breadth — each gained one axis, each left the next axis to the following paper.
 
-| Paper           | Channel | Backbone                            | Generalization            | Training data          | Speedup vs. ground truth                         | Validated on                         |
-| --------------- | ------- | ----------------------------------- | ------------------------- | ---------------------- | ------------------------------------------------ | ------------------------------------ |
-| EMSim           | EM      | physics + parasitic reduction + GPU | per design                | n/a                    | 32× over baseline                                | S-Box, AES (SMIC 180 nm silicon)     |
+| Paper           | Channel | Backbone                            | Generalization            | Training data          | Speedup vs. ground truth                         | Validated on                                               |
+| --------------- | ------- | ----------------------------------- | ------------------------- | ---------------------- | ------------------------------------------------ | ---------------------------------------------------------- |
+| EMSim           | EM      | physics + parasitic reduction + GPU | per design                | n/a                    | 32× over baseline                                | S-Box, AES (SMIC 180 nm silicon)                           |
 | EMSim+ (GAN)    | EM      | conditional GAN                     | per design                | ~1K pairs (per design) | 242× over EMSim at 1M traces                     | Kyber + 3 AES variants (extension, masked, 180 nm silicon) |
-| EMSim+ (GAN+TL) | EM      | GAN + transfer learning             | cross-design + cross-node | ~500 fine-tune pairs   | 113–149× per-dataset; 282–483× at 1M-trace scale | 5 designs, 180 nm + 55 nm            |
-| AIPS            | Power   | conditional diffusion               | multi-target (5 designs)  | ~1K traces             | 4.14–42.44× over PTPX; up to 10⁴× inference-only | AES, Kyber, masked AES (×2), RISC-V  |
+| EMSim+ (GAN+TL) | EM      | GAN + transfer learning             | cross-design + cross-node | ~500 fine-tune pairs   | 113–149× per-dataset; 282–483× at 1M-trace scale | 5 designs, 180 nm + 55 nm                                  |
+| AIPS            | Power   | conditional diffusion               | multi-target (5 designs)  | ~1K traces             | 4.14–42.44× over PTPX; up to 10⁴× inference-only | AES, Kyber, masked AES (×2), RISC-V                        |
 
 The structure of the lineage matters because it rules out a simpler reading. These are not four attempts at the same problem, each a bit faster. EMSim answered: can physics-accurate EM simulation run at evaluation scale? EMSim+ (GAN) answered: can a learned model replace per-trace physics simulation? EMSim+ (GAN+TL) answered: can that learned model be reused across designs without starting over? AIPS answered: can a different generative architecture extend the approach to the power channel while preserving the trace diversity that channel demands? Each question was only visible because the previous answer made it concrete. The lineage is a sequence of specific bottlenecks resolved in sequence, not a progression toward a single target efficiency number.
 
