@@ -8,13 +8,6 @@ Haocheng Ma's academic website (https://mahaocheng.me), built on the [al-folio](
 
 ## Common commands
 
-Local development via Docker (preferred — matches CI):
-
-```bash
-docker compose up          # serve at http://localhost:8080 with livereload (port 35729)
-docker compose -f docker-compose-slim.yml up   # slim image variant
-```
-
 Local development via Ruby/Bundler:
 
 ```bash
