@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Intel TDX：GRUB 启动中的度量启动与远程证明"
+title: "Intel TDX: Measured Boot and Remote Attestation with GRUB"
 date: 2025-01-12
 description: GRUB 启动的 TD 如何从固件一路度量到内核，以及验证方如何校验这条启动链。
 tags: security
