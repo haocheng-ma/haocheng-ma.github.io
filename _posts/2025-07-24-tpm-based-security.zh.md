@@ -116,7 +116,7 @@ _Credential activation allows a remote party to verify one key is on the same TP
 
 ## Reference
 
-1. [https://ericchiang.github.io/post/tpm-keys/]()
-2. [https://tpm2-software.github.io/tpm2-tss/getting-started/2019/12/18/Remote-Attestation.html]()
-3. [https://github.com/google/go-attestation/blob/master/docs/credential-activation.md]()
-4. [https://github.com/tpm2dev/tpm.dev.tutorials]()
+1. [A Practical Guide to TPM 2.0](https://ericchiang.github.io/post/tpm-keys/)
+2. [Remote Attestation with tpm2-tss](https://tpm2-software.github.io/tpm2-tss/getting-started/2019/12/18/Remote-Attestation.html)
+3. [Credential Activation in go-attestation](https://github.com/google/go-attestation/blob/master/docs/credential-activation.md)
+4. [tpm.dev Tutorials](https://github.com/tpm2dev/tpm.dev.tutorials)
