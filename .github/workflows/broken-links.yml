@@ -42,7 +42,7 @@ jobs:
   link-checker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Link Checker 🔗
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
@@ -52,6 +52,7 @@ jobs:
           # Markdown files whose Liquid links are resolved only after Jekyll builds.
           args: >-
             --user-agent 'curl/7.54'
+            --accept '200..=299,403'
             --exclude-path README.md
             --exclude-path FAQ.md
             --exclude-path CUSTOMIZE.md

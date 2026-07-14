@@ -212,7 +212,7 @@ _14._ 选中的 UEFI 应用代码 PE/COFF 镜像，即 OS loader（**PCR[4]/RTMR
 
 ### GRUB 把度量链延伸到 OS
 
-[GRUB 2](https://git.savannah.gnu.org/cgit/grub.git/) 接手后，把可信启动链从虚拟固件延伸到 OS。
+[GRUB 2](https://www.gnu.org/software/grub/) 接手后，把可信启动链从虚拟固件延伸到 OS。
 
 _注：[shim](https://github.com/rhboot/shim) 的主要职责是把 UEFI Secure Boot 的信任链延伸到 Linux 生态。本文不展开其验证机制，但启用 Secure Boot 时，shim 本身及相关授权事件仍属于启动链的一部分。_
 
