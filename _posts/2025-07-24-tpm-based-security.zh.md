@@ -52,10 +52,10 @@ EK 被存储在 TPM Shielded Location，私钥永远不能暴露，公钥可从 
 在 TPM 的 Storage 体系结构中，密钥的创建遵循树状层级结构：
 
 - 比如 Attestation Key（AK）或应用密钥，都是在 TPM 的存储体系下生成的；
-- 这些密钥的父密钥是 SRK（Storage Root Key），SRK 是 TPM 中的一个根密钥，用于保护和派生其他密钥；
-- 而这些密钥的 key attestation（密钥认证） 则由 EK（Endorsement Key） 来实现。
+- SRK（Storage Root Key）是这棵树的根密钥，用于保护子密钥；
+- 子密钥不必一直保存在 TPM 内部。它可以作为受保护的 Blob 存放在外部，重新加载时由父密钥解密并验证完整性。沿着父子关系向上追溯，最终会回到 SRK。
 
-换句话说，Key attestation 是一种通过签名链建立信任的过程，核心目的是构建一条从 EK 一直到某个具体密钥（如 AK）的信任链。
+这种父子关系描述的是密钥的存储和保护方式，本身并不是一条证书签名链。如果远端服务需要确认某个新的 AK 与 EK 位于同一个 TPM 中，可以使用下文介绍的 Credential Activation。
 
 ## Attestation Key
 
@@ -99,19 +99,20 @@ _Credential activation allows a remote party to verify one key is on the same TP
     Figure 2. The Flow of Credential Activation
 </div>
 
-- Client 将 IAK 的公钥、EK 的公钥和 IAK 的密钥属性发送给 Server；
-- Server 验证 IAK 的属性是否满足安全策略、生成秘密值并构造 Challenge，形式如下，然后返回给 Client：
+- Client 将 EK 公钥和 IAK 的 Public Area 发送给 Server。Public Area 同时包含公钥和密钥属性；对其计算哈希可以得到 IAK Name；
+- Server 验证 IAK 的属性是否满足安全策略，生成秘密值和随机 Seed，然后构造 Challenge 并返回给 Client。可以将其简化为：
 
+  ```text
+  encrypted_seed = Encrypt(EK_public, seed)
+  symmetric_key  = KDF(seed, IAK_Name)
+  credential     = EncryptAndAuthenticate(symmetric_key, secret, IAK_Name)
+  challenge      = credential || encrypted_seed
   ```
-  Challenge = ENC{secret} | aes_key1
-              ENC{key1}  | aes_key2
-              ENC{seed}  | EK_pub
-  ```
 
-  其中，`aes_key1` 是随机生成的对称密钥；`aes_key2 = KDF(seed, IAK name)`：KDF 是密钥派生函数，IAK name 是 IAK 公钥 Blob（包含属性）的哈希；所有敏感数据都用 EK 公钥加密，确保只能由目标 TPM 解密。
+  只有持有 EK 私钥的 TPM 才能恢复 Seed。IAK Name 同时参与密钥派生和完整性校验，因此，只要 IAK 公钥或密钥属性发生变化，TPM 的计算结果就无法匹配 Challenge。
 
-- Client 将 Challenge 发送给 TPM，调用 `ActivateCredential` 命令；
-- TPM 内部只有在拥有与 Challenge 匹配的 EK 和 IAK 的前提下，才能正确解密并返回秘密值。成功解密即意味着：IAK 存在于该 TPM 中；IAK 拥有正确的密钥属性。
+- Client 将 Challenge 以及 EK、IAK 的句柄发送给 TPM，调用 `TPM2_ActivateCredential` 命令；
+- TPM 使用 EK 恢复 Seed，再根据 Seed 和当前加载的 IAK Name 重新派生密钥，验证 Credential 并返回秘密值。成功返回意味着：这个具有指定公钥和属性的 IAK 与 EK 位于同一个 TPM 中。
 
 ## Reference
 
